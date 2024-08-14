@@ -1,4 +1,4 @@
-// v1.0 homepageinteraction
+// v1.1 homepageinteraction
 document.addEventListener('DOMContentLoaded', function () {
     // register gsap plugins if available
     if (gsap.ScrollTrigger !== undefined) {
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const CARD_CLASS = '.home_sticky-card';
       const BG_CLASS = '.home_sticky-card-bg';
       const UI_CLASS = '.sticky_home-img-ui';
+      const IMG_CLASS = '.home_sticky-img';
       const card1 = document.querySelector(`${CARD_CLASS}.is-1`);
       const card2 = document.querySelector(`${CARD_CLASS}.is-2`);
       const card3 = document.querySelector(`${CARD_CLASS}.is-3`);
@@ -19,6 +20,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const bg3 = document.querySelector(`${BG_CLASS}.is-3`);
       const cardWrap = document.querySelector(CARD_WRAP_CLASS);
       const section = document.querySelector(SECTION_CLASS);
+      const img2 = document.querySelector(`${IMG_CLASS}.is-2`);
+      const img3 = document.querySelector(`${IMG_CLASS}.is-3`);
   
       if (!card1 || !section || !cardWrap) return;
       const ui1 = card1.querySelector(UI_CLASS);
@@ -39,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
           ease: 'none',
         },
       });
-      tl.set([ui2, ui3], {
+      tl.set([ui2, ui3, img2, img3], {
         opacity: 0,
       });
       tl.fromTo(
@@ -109,6 +112,18 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         '<'
       );
+      // Added IMG2 transition in sync with UI2
+      tl.fromTo(
+        img2,
+        {
+          opacity: 0,
+        },
+        {
+          opacity: 1,
+          duration: 0.5,
+        },
+        '<' // Ensures IMG2 animates in sync with UI2
+      );
       tl.to(card3, {
         y: '0rem',
         scale: 1,
@@ -147,6 +162,18 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         '<'
       );
+      // Added IMG3 transition in sync with UI3
+      tl.fromTo(
+        img3,
+        {
+          opacity: 0,
+        },
+        {
+          opacity: 1,
+          duration: 0.5,
+        },
+        '<' // Ensures IMG3 animates in sync with UI3
+      );
     };
   
     //////////////////////////////
@@ -162,4 +189,3 @@ document.addEventListener('DOMContentLoaded', function () {
       };
     });
   });
-  
