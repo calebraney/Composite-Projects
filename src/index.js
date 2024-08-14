@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        start: 'top top',
+        start: 'clamp(top 0)',
         end: 'bottom bottom',
         ease: 'none',
         markers: false,
