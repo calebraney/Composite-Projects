@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        start: 'clamp(top top)',
+        start: 'top top',
         end: 'bottom bottom',
         ease: 'none',
         markers: false,
@@ -46,15 +46,6 @@ document.addEventListener('DOMContentLoaded', function () {
         yPercent: 50,
       }
     );
-    // tl.fromTo(
-    //   lottieEl,
-    //   {
-    //     yPercent: 0,
-    //   },
-    //   {
-    //     yPercent: 20,
-    //   }
-    // );
   };
 
   //lottie scrolltrigger function
