@@ -1,3 +1,4 @@
+// Surfaceworx Homepage interaction
 // v1.1 homepageinteraction
 document.addEventListener('DOMContentLoaded', function () {
   // register gsap plugins if available
