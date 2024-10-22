@@ -26,18 +26,63 @@
       });
       return typeSplit;
     };
-    const projectsMap = function() {
+    const projectsMap = function(isMobile) {
       const WRAP = ".map_wrap";
       const STATE_PATH = "data-state-path";
       const STATE_POINT = "data-state-point";
-      const ACTIVE_CLASS = ".is-active";
+      const ACTIVE_CLASS = "is-active";
       const wrap = document.querySelector(WRAP);
       const statePaths = gsap.utils.toArray(`[${STATE_PATH}]`);
-      const statePoints = gsap.utils.toArray(STATE_POINT);
+      const statePoints = gsap.utils.toArray(`[${STATE_POINT}]`);
       if (!wrap) return;
-      statePaths.forEach((state, index) => {
-        const id = state.getAttribute(STATE_PATH);
-        console.log(id);
+      statePaths.forEach((statePath, index) => {
+        const id = statePath.getAttribute(STATE_PATH);
+        const statePoint = document.querySelector(`[${STATE_POINT}=${id}]`);
+        if (!statePoint) return;
+        const calculatePosition = function() {
+          console.log("calc");
+          const wrapRect = wrap.getBoundingClientRect();
+          const wrapWidth = wrapRect.right - wrapRect.left;
+          const stateRect = statePath.getBoundingClientRect();
+          const statePointWidth = statePoint.getBoundingClientRect().right - statePoint.getBoundingClientRect().left;
+          let left = Math.round(stateRect.right - wrapRect.left);
+          let right = Math.round(left - (stateRect.right - stateRect.left) - statePointWidth);
+          if (wrapWidth * 0.6 > left) {
+            statePoint.style.left = left + "px";
+          } else {
+            statePoint.style.left = right + "px";
+          }
+          let top = Math.round(stateRect.top - wrapRect.top);
+          statePoint.style.top = top + -30 + "px";
+        };
+        if (!isMobile) {
+          calculatePosition();
+        }
+        let windowWidth = window.innerWidth;
+        window.addEventListener("resize", function() {
+          if (window.innerWidth !== windowWidth) {
+            windowWidth = window.innerWidth;
+            calculatePosition();
+          }
+        });
+        statePath.addEventListener("mouseenter", function(e) {
+          statePoints.forEach((point, index2) => {
+            point.classList.remove(ACTIVE_CLASS);
+          });
+          statePaths.forEach((path, index2) => {
+            path.classList.remove(ACTIVE_CLASS);
+          });
+          statePoint.classList.add(ACTIVE_CLASS);
+          statePath.classList.add(ACTIVE_CLASS);
+        });
+      });
+      wrap.addEventListener("mouseleave", function(e) {
+        statePoints.forEach((point, index) => {
+          point.classList.remove(ACTIVE_CLASS);
+        });
+        statePaths.forEach((path, index) => {
+          path.classList.remove(ACTIVE_CLASS);
+        });
       });
     };
     const testimonialsSlider = function() {
@@ -74,7 +119,20 @@
         });
       });
     };
-    projectsMap();
-    testimonialsSlider();
+    let mm = gsap.matchMedia();
+    mm.add(
+      {
+        //This is the conditions object
+        isMobile: "(max-width: 767px)",
+        isTablet: "(min-width: 768px)  and (max-width: 991px)",
+        isDesktop: "(min-width: 992px)",
+        reduceMotion: "(prefers-reduced-motion: reduce)"
+      },
+      (gsapContext) => {
+        let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
+        projectsMap(isMobile);
+        testimonialsSlider();
+      }
+    );
   });
 })();
