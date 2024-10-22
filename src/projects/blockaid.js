@@ -1,5 +1,5 @@
 // Blockaid Homepage interaction
-// v2.0
+// v2.1
 document.addEventListener('DOMContentLoaded', function () {
   // register gsap plugins if available
   if (gsap.ScrollTrigger !== undefined) {
@@ -57,15 +57,21 @@ document.addEventListener('DOMContentLoaded', function () {
     //h1 load tween
     const loadHeading = function (item) {
       //split the text
-      const splitText = runSplit(item);
+      const splitText = runSplit(item, 'lines, words, chars');
       if (!splitText) return;
       // get the position attribute
       const position = attr('<', item.getAttribute(POSITION));
       tl.set(item, { opacity: 1 });
       tl.fromTo(
-        splitText.words,
-        { opacity: 0, y: '50%' },
-        { opacity: 1, y: '0%', stagger: { each: 0.1, from: 'left' } },
+        splitText.chars,
+        {
+          opacity: 0,
+        },
+        {
+          opacity: 1,
+          ease: 'power1.out',
+          stagger: { amount: 0.4, from: 'random' },
+        },
         position
       );
     };
@@ -441,8 +447,8 @@ document.addEventListener('DOMContentLoaded', function () {
         breakpoints: {
           // mobile
           320: {
-            slidesPerView: 1,
-            spaceBetween: 16,
+            slidesPerView: 'auto',
+            spaceBetween: 0,
           },
           // tablet
           768: {
@@ -536,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
         breakpoints: {
           // mobile
           320: {
-            slidesPerView: 1,
+            slidesPerView: 2,
             spaceBetween: 24,
           },
           500: {
