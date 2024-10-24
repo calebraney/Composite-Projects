@@ -85,9 +85,8 @@
         });
       });
     };
-    const testimonialsSlider = function() {
-      const COMPONENT = ".testimonials_component";
-      const SLIDER = ".swiper";
+    const featuredProjectsSlider = function() {
+      const COMPONENT = ".projects_component.swiper";
       const NEXT_BUTTON = ".swiper-next";
       const PREVIOUS_BUTTON = ".swiper-prev";
       const ACTIVE_CLASS = "is-active";
@@ -97,14 +96,49 @@
         if (!component) return;
         const nextButtonEl = component.querySelector(NEXT_BUTTON);
         const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-        const slider = component.querySelector(SLIDER);
+        const slider = component;
         if (!slider) return;
         const swiper = new Swiper(slider, {
           speed: 800,
           slidesPerView: "auto",
-          loop: true,
-          centeredSlides: true,
-          allowTouchMove: false,
+          spaceBetween: 48,
+          loop: false,
+          centeredSlides: false,
+          allowTouchMove: true,
+          slideActiveClass: ACTIVE_CLASS,
+          slideDuplicateActiveClass: ACTIVE_CLASS,
+          navigation: {
+            nextEl: nextButtonEl,
+            prevEl: previousButtonEl,
+            disabledClass: DISABLED_CLASS
+          },
+          on: {
+            slideChange: function() {
+            }
+          }
+        });
+      });
+    };
+    const careeersSlider = function() {
+      const COMPONENT = ".employee-testimonials_slider";
+      const NEXT_BUTTON = ".swiper-next";
+      const PREVIOUS_BUTTON = ".swiper-prev";
+      const ACTIVE_CLASS = "is-active";
+      const DISABLED_CLASS = "is-disabled";
+      const components = gsap.utils.toArray(COMPONENT);
+      components.forEach(function(component) {
+        if (!component) return;
+        const nextButtonEl = component.querySelector(NEXT_BUTTON);
+        const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
+        const slider = component;
+        if (!slider) return;
+        const swiper = new Swiper(slider, {
+          speed: 800,
+          slidesPerView: "auto",
+          spaceBetween: 32,
+          loop: false,
+          centeredSlides: false,
+          allowTouchMove: true,
           slideActiveClass: ACTIVE_CLASS,
           slideDuplicateActiveClass: ACTIVE_CLASS,
           navigation: {
@@ -131,7 +165,8 @@
       (gsapContext) => {
         let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
         projectsMap(isMobile);
-        testimonialsSlider();
+        careeersSlider();
+        featuredProjectsSlider();
       }
     );
   });

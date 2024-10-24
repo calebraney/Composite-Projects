@@ -1,5 +1,5 @@
-// Galehead interaction
-// v1.0
+// Galehead interactions
+// v2.0
 document.addEventListener('DOMContentLoaded', function () {
   // register gsap plugins if available
   if (gsap.ScrollTrigger !== undefined) {
@@ -111,10 +111,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
-  const testimonialsSlider = function () {
+  const featuredProjectsSlider = function () {
     //Swiper selectors
-    const COMPONENT = '.testimonials_component';
-    const SLIDER = '.swiper';
+    const COMPONENT = '.projects_component.swiper';
 
     //Button selectors
     const NEXT_BUTTON = '.swiper-next';
@@ -128,14 +127,56 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!component) return;
       const nextButtonEl = component.querySelector(NEXT_BUTTON);
       const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-      const slider = component.querySelector(SLIDER);
+      const slider = component;
       if (!slider) return;
       const swiper = new Swiper(slider, {
         speed: 800,
         slidesPerView: 'auto',
-        loop: true,
-        centeredSlides: true,
-        allowTouchMove: false,
+        spaceBetween: 48,
+        loop: false,
+        centeredSlides: false,
+        allowTouchMove: true,
+        slideActiveClass: ACTIVE_CLASS,
+        slideDuplicateActiveClass: ACTIVE_CLASS,
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: DISABLED_CLASS,
+        },
+        on: {
+          slideChange: function () {
+            // console.log('title swiper:', this.activeIndex);
+          },
+        },
+      });
+    });
+  };
+
+  const careeersSlider = function () {
+    //Swiper selectors
+    const COMPONENT = '.employee-testimonials_slider';
+
+    //Button selectors
+    const NEXT_BUTTON = '.swiper-next';
+    const PREVIOUS_BUTTON = '.swiper-prev';
+    //classes
+    const ACTIVE_CLASS = 'is-active';
+    const DISABLED_CLASS = 'is-disabled';
+
+    const components = gsap.utils.toArray(COMPONENT);
+    components.forEach(function (component) {
+      if (!component) return;
+      const nextButtonEl = component.querySelector(NEXT_BUTTON);
+      const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
+      const slider = component;
+      if (!slider) return;
+      const swiper = new Swiper(slider, {
+        speed: 800,
+        slidesPerView: 'auto',
+        spaceBetween: 32,
+        loop: false,
+        centeredSlides: false,
+        allowTouchMove: true,
         slideActiveClass: ACTIVE_CLASS,
         slideDuplicateActiveClass: ACTIVE_CLASS,
         navigation: {
@@ -166,7 +207,8 @@ document.addEventListener('DOMContentLoaded', function () {
       let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
       // let individual instances decide if they are run
       projectsMap(isMobile);
-      testimonialsSlider();
+      careeersSlider();
+      featuredProjectsSlider();
       //globaally run animations on specific breakpoints
     }
   );
