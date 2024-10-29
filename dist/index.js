@@ -153,6 +153,45 @@
         });
       });
     };
+    const landownersSlider = function() {
+      const COMPONENT = ".landowner-testimonials_component";
+      const NEXT_BUTTON = ".swiper-next";
+      const PREVIOUS_BUTTON = ".swiper-prev";
+      const BULLET_WRAP = ".swiper-bullet-wrapper";
+      const ACTIVE_CLASS = "is-active";
+      const DISABLED_CLASS = "is-disabled";
+      const components = [...document.querySelectorAll(COMPONENT)];
+      components.forEach(function(component) {
+        if (!component) return;
+        const nextButtonEl = component.querySelector(NEXT_BUTTON);
+        const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
+        const bulletsEl = component.querySelector(BULLET_WRAP);
+        const slider = component.querySelector(".swiper");
+        if (!slider) return;
+        const swiper = new Swiper(slider, {
+          speed: 800,
+          slidesPerView: 1,
+          spaceBetween: 32,
+          loop: false,
+          centeredSlides: true,
+          allowTouchMove: false,
+          slideActiveClass: ACTIVE_CLASS,
+          navigation: {
+            nextEl: nextButtonEl,
+            prevEl: previousButtonEl,
+            disabledClass: DISABLED_CLASS
+          },
+          pagination: {
+            type: "bullets",
+            el: bulletsEl,
+            bulletActiveClass: ACTIVE_CLASS,
+            bulletClass: "swiper-bullet",
+            bulletElement: "button",
+            clickable: true
+          }
+        });
+      });
+    };
     let mm = gsap.matchMedia();
     mm.add(
       {
@@ -167,6 +206,7 @@
         projectsMap(isMobile);
         careeersSlider();
         featuredProjectsSlider();
+        landownersSlider();
       }
     );
   });
