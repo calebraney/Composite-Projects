@@ -1,5 +1,5 @@
 // Galehead interactions
-// v2.1
+// v2.3
 document.addEventListener('DOMContentLoaded', function () {
   // register gsap plugins if available
   if (gsap.ScrollTrigger !== undefined) {
@@ -132,7 +132,20 @@ document.addEventListener('DOMContentLoaded', function () {
       const swiper = new Swiper(slider, {
         speed: 800,
         slidesPerView: 'auto',
-        spaceBetween: 48,
+        breakpoints: {
+          // mobile
+          320: {
+            spaceBetween: 16,
+          },
+          // tablet
+          768: {
+            spaceBetween: 24,
+          },
+          // desktop
+          992: {
+            spaceBetween: 48,
+          },
+        },
         loop: false,
         centeredSlides: false,
         allowTouchMove: true,
@@ -147,6 +160,42 @@ document.addEventListener('DOMContentLoaded', function () {
           slideChange: function () {
             // console.log('title swiper:', this.activeIndex);
           },
+        },
+      });
+    });
+  };
+
+  const caseGallerySlider = function () {
+    //Swiper selectors
+    const COMPONENT = '.case-body-slider_component';
+
+    //Button selectors
+    const NEXT_BUTTON = '.swiper-next';
+    const PREVIOUS_BUTTON = '.swiper-prev';
+    //classes
+    const ACTIVE_CLASS = 'is-active';
+    const DISABLED_CLASS = 'is-disabled';
+
+    const components = gsap.utils.toArray(COMPONENT);
+    components.forEach(function (component) {
+      if (!component) return;
+      const nextButtonEl = component.querySelector(NEXT_BUTTON);
+      const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
+      const slider = component.querySelector('.swiper');
+      if (!slider) return;
+      const swiper = new Swiper(slider, {
+        speed: 800,
+        slidesPerView: 'auto',
+        spaceBetween: 16,
+        loop: false,
+        centeredSlides: false,
+        allowTouchMove: true,
+        slideActiveClass: ACTIVE_CLASS,
+        slideDuplicateActiveClass: ACTIVE_CLASS,
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: DISABLED_CLASS,
         },
       });
     });
@@ -251,6 +300,7 @@ document.addEventListener('DOMContentLoaded', function () {
       careeersSlider();
       featuredProjectsSlider();
       landownersSlider();
+      caseGallerySlider();
       //globaally run animations on specific breakpoints
     }
   );

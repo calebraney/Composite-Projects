@@ -101,7 +101,20 @@
         const swiper = new Swiper(slider, {
           speed: 800,
           slidesPerView: "auto",
-          spaceBetween: 48,
+          breakpoints: {
+            // mobile
+            320: {
+              spaceBetween: 16
+            },
+            // tablet
+            768: {
+              spaceBetween: 24
+            },
+            // desktop
+            992: {
+              spaceBetween: 48
+            }
+          },
           loop: false,
           centeredSlides: false,
           allowTouchMove: true,
@@ -115,6 +128,36 @@
           on: {
             slideChange: function() {
             }
+          }
+        });
+      });
+    };
+    const caseGallerySlider = function() {
+      const COMPONENT = ".case-body-slider_component";
+      const NEXT_BUTTON = ".swiper-next";
+      const PREVIOUS_BUTTON = ".swiper-prev";
+      const ACTIVE_CLASS = "is-active";
+      const DISABLED_CLASS = "is-disabled";
+      const components = gsap.utils.toArray(COMPONENT);
+      components.forEach(function(component) {
+        if (!component) return;
+        const nextButtonEl = component.querySelector(NEXT_BUTTON);
+        const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
+        const slider = component.querySelector(".swiper");
+        if (!slider) return;
+        const swiper = new Swiper(slider, {
+          speed: 800,
+          slidesPerView: "auto",
+          spaceBetween: 16,
+          loop: false,
+          centeredSlides: false,
+          allowTouchMove: true,
+          slideActiveClass: ACTIVE_CLASS,
+          slideDuplicateActiveClass: ACTIVE_CLASS,
+          navigation: {
+            nextEl: nextButtonEl,
+            prevEl: previousButtonEl,
+            disabledClass: DISABLED_CLASS
           }
         });
       });
@@ -207,6 +250,7 @@
         careeersSlider();
         featuredProjectsSlider();
         landownersSlider();
+        caseGallerySlider();
       }
     );
   });
