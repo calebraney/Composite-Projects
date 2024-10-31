@@ -1,5 +1,5 @@
 // Galehead interactions
-// v2.3
+// v3.0
 document.addEventListener('DOMContentLoaded', function () {
   // register gsap plugins if available
   if (gsap.ScrollTrigger !== undefined) {

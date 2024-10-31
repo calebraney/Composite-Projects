@@ -1,5 +1,5 @@
 // Galehead interactions
-// v2.3
+// v3.0
 document.addEventListener('DOMContentLoaded', function () {
   // register gsap plugins if available
   if (gsap.ScrollTrigger !== undefined) {
@@ -111,176 +111,174 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
-  const featuredProjectsSlider = function () {
-    //Swiper selectors
-    const COMPONENT = '.projects_component.swiper';
-
-    //Button selectors
+  const createSlider = function (components, options, modules) {
+    //Element selectors
+    const SLIDER = '.swiper';
     const NEXT_BUTTON = '.swiper-next';
     const PREVIOUS_BUTTON = '.swiper-prev';
+    const BULLET_WRAP = '.swiper-bullet-wrapper';
     //classes
     const ACTIVE_CLASS = 'is-active';
     const DISABLED_CLASS = 'is-disabled';
-
-    const components = gsap.utils.toArray(COMPONENT);
+    const swipersArray = [];
+    //loop through each component and create a swiper
     components.forEach(function (component) {
+      //get elements
       if (!component) return;
-      const nextButtonEl = component.querySelector(NEXT_BUTTON);
-      const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-      const slider = component;
+      const slider = component.querySelector(SLIDER);
       if (!slider) return;
-      const swiper = new Swiper(slider, {
+      //set the default settings
+      const defaultSettings = {
         speed: 800,
-        slidesPerView: 'auto',
-        breakpoints: {
-          // mobile
-          320: {
-            spaceBetween: 16,
-          },
-          // tablet
-          768: {
-            spaceBetween: 24,
-          },
-          // desktop
-          992: {
-            spaceBetween: 48,
-          },
-        },
-        loop: false,
-        centeredSlides: false,
-        allowTouchMove: true,
-        slideActiveClass: ACTIVE_CLASS,
-        slideDuplicateActiveClass: ACTIVE_CLASS,
-        navigation: {
-          nextEl: nextButtonEl,
-          prevEl: previousButtonEl,
-          disabledClass: DISABLED_CLASS,
-        },
-        on: {
-          slideChange: function () {
-            // console.log('title swiper:', this.activeIndex);
-          },
-        },
-      });
-    });
-  };
-
-  const caseGallerySlider = function () {
-    //Swiper selectors
-    const COMPONENT = '.case-body-slider_component';
-
-    //Button selectors
-    const NEXT_BUTTON = '.swiper-next';
-    const PREVIOUS_BUTTON = '.swiper-prev';
-    //classes
-    const ACTIVE_CLASS = 'is-active';
-    const DISABLED_CLASS = 'is-disabled';
-
-    const components = gsap.utils.toArray(COMPONENT);
-    components.forEach(function (component) {
-      if (!component) return;
-      const nextButtonEl = component.querySelector(NEXT_BUTTON);
-      const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-      const slider = component.querySelector('.swiper');
-      if (!slider) return;
-      const swiper = new Swiper(slider, {
-        speed: 800,
-        slidesPerView: 'auto',
         spaceBetween: 16,
         loop: false,
         centeredSlides: false,
         allowTouchMove: true,
         slideActiveClass: ACTIVE_CLASS,
         slideDuplicateActiveClass: ACTIVE_CLASS,
-        navigation: {
-          nextEl: nextButtonEl,
-          prevEl: previousButtonEl,
-          disabledClass: DISABLED_CLASS,
-        },
-      });
+      };
+      // setup module settings
+      let finalModules = {};
+      //NAVIGATION
+      if (modules.navigation === true) {
+        //get the navigation elements
+        const nextButtonEl = component.querySelector(NEXT_BUTTON);
+        const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
+        //set the navigation settings
+        const navigationSettings = {
+          navigation: {
+            nextEl: nextButtonEl,
+            prevEl: previousButtonEl,
+            disabledClass: DISABLED_CLASS,
+          },
+        };
+        finalModules = { ...finalModules, ...navigationSettings };
+      }
+      //PAGINATION
+      if (modules.pagination === true) {
+        //get the pagination elements
+        const bulletsEl = component.querySelector(BULLET_WRAP);
+        //set the pagination settings
+        const paginationSettings = {
+          pagination: {
+            type: 'bullets',
+            el: bulletsEl,
+            bulletActiveClass: ACTIVE_CLASS,
+            bulletClass: 'swiper-bullet',
+            bulletElement: 'button',
+            clickable: true,
+          },
+        };
+        finalModules = { ...finalModules, ...paginationSettings };
+      }
+
+      //combine all the settings
+      const swiperSettings = { ...defaultSettings, ...finalModules, ...options };
+      //create swiper
+      const swiper = new Swiper(slider, swiperSettings);
+      //push swiper to array for access
+      swipersArray.push(swiper);
     });
+    return swipersArray;
+  };
+
+  const caseGallerySlider = function () {
+    const COMPONENT = '.case-gallery-slider_component';
+    const components = [...document.querySelectorAll(COMPONENT)];
+    const options = {
+      slidesPerView: 'auto',
+      loop: true,
+    };
+    const modules = {
+      navigation: true,
+      pagination: false,
+      autoplay: false,
+    };
+    const sliders = createSlider(components, options, modules);
+  };
+
+  const caseNewsSlider = function () {
+    const COMPONENT = '.case-news-slider_component';
+    const components = [...document.querySelectorAll(COMPONENT)];
+    const options = {
+      slidesPerView: 'auto',
+      spaceBetween: 16,
+      loop: false,
+      centeredSlides: false,
+    };
+    const modules = {
+      navigation: true,
+    };
+    const sliders = createSlider(components, options, modules);
+  };
+
+  const featuredProjectsSlider = function () {
+    const COMPONENT = '.projects-slider_component';
+    const components = [...document.querySelectorAll(COMPONENT)];
+    const options = {
+      slidesPerView: 'auto',
+      breakpoints: {
+        // mobile
+        320: {
+          spaceBetween: 16,
+        },
+        // tablet
+        768: {
+          spaceBetween: 24,
+        },
+        // desktop
+        992: {
+          spaceBetween: 48,
+        },
+      },
+    };
+    const modules = {
+      navigation: true,
+    };
+    const sliders = createSlider(components, options, modules);
   };
 
   const careeersSlider = function () {
-    //Swiper selectors
-    const COMPONENT = '.employee-testimonials_slider';
-
-    //Button selectors
-    const NEXT_BUTTON = '.swiper-next';
-    const PREVIOUS_BUTTON = '.swiper-prev';
-    //classes
-    const ACTIVE_CLASS = 'is-active';
-    const DISABLED_CLASS = 'is-disabled';
-
-    const components = gsap.utils.toArray(COMPONENT);
-    components.forEach(function (component) {
-      if (!component) return;
-      const nextButtonEl = component.querySelector(NEXT_BUTTON);
-      const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-      const slider = component;
-      if (!slider) return;
-      const swiper = new Swiper(slider, {
-        speed: 800,
-        slidesPerView: 'auto',
-        spaceBetween: 32,
-        loop: false,
-        centeredSlides: false,
-        allowTouchMove: true,
-        slideActiveClass: ACTIVE_CLASS,
-        slideDuplicateActiveClass: ACTIVE_CLASS,
-        navigation: {
-          nextEl: nextButtonEl,
-          prevEl: previousButtonEl,
-          disabledClass: DISABLED_CLASS,
-        },
-        on: {
-          slideChange: function () {
-            // console.log('title swiper:', this.activeIndex);
-          },
-        },
-      });
-    });
-  };
-  const landownersSlider = function () {
-    //elements
-    const COMPONENT = '.landowner-testimonials_component';
-    const NEXT_BUTTON = '.swiper-next';
-    const PREVIOUS_BUTTON = '.swiper-prev';
-    const BULLET_WRAP = '.swiper-bullet-wrapper';
-    //class options
-    const ACTIVE_CLASS = 'is-active';
-    const DISABLED_CLASS = 'is-disabled';
+    const COMPONENT = '.employee-testimonials_component';
     const components = [...document.querySelectorAll(COMPONENT)];
-    components.forEach(function (component) {
-      if (!component) return;
-      const nextButtonEl = component.querySelector(NEXT_BUTTON);
-      const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-      const bulletsEl = component.querySelector(BULLET_WRAP);
-      const slider = component.querySelector('.swiper');
-      if (!slider) return;
-      const swiper = new Swiper(slider, {
-        speed: 800,
-        slidesPerView: 1,
-        spaceBetween: 32,
-        loop: false,
-        centeredSlides: true,
-        allowTouchMove: false,
-        slideActiveClass: ACTIVE_CLASS,
-        navigation: {
-          nextEl: nextButtonEl,
-          prevEl: previousButtonEl,
-          disabledClass: DISABLED_CLASS,
+    const options = {
+      slidesPerView: 'auto',
+      breakpoints: {
+        // mobile
+        320: {
+          spaceBetween: 16,
         },
-        pagination: {
-          type: 'bullets',
-          el: bulletsEl,
-          bulletActiveClass: ACTIVE_CLASS,
-          bulletClass: 'swiper-bullet',
-          bulletElement: 'button',
-          clickable: true,
+        // tablet
+        768: {
+          spaceBetween: 24,
         },
-      });
-    });
+        // desktop
+        992: {
+          spaceBetween: 32,
+        },
+      },
+    };
+    const modules = {
+      navigation: true,
+      pagination: false,
+    };
+    const sliders = createSlider(components, options, modules);
+  };
+
+  const landownersSlider = function () {
+    const COMPONENT = '.landowner-testimonials_component';
+    const components = [...document.querySelectorAll(COMPONENT)];
+    const options = {
+      slidesPerView: 1,
+      spaceBetween: 32,
+      loop: false,
+      centeredSlides: true,
+    };
+    const modules = {
+      navigation: true,
+      pagination: true,
+    };
+    const sliders = createSlider(components, options, modules);
   };
 
   //run interactions on page load
@@ -301,6 +299,8 @@ document.addEventListener('DOMContentLoaded', function () {
       featuredProjectsSlider();
       landownersSlider();
       caseGallerySlider();
+      caseNewsSlider();
+      // newSlider();
       //globaally run animations on specific breakpoints
     }
   );
