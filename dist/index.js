@@ -85,155 +85,153 @@
         });
       });
     };
-    const featuredProjectsSlider = function() {
-      const COMPONENT = ".projects_component.swiper";
-      const NEXT_BUTTON = ".swiper-next";
-      const PREVIOUS_BUTTON = ".swiper-prev";
-      const ACTIVE_CLASS = "is-active";
-      const DISABLED_CLASS = "is-disabled";
-      const components = gsap.utils.toArray(COMPONENT);
-      components.forEach(function(component) {
-        if (!component) return;
-        const nextButtonEl = component.querySelector(NEXT_BUTTON);
-        const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-        const slider = component;
-        if (!slider) return;
-        const swiper = new Swiper(slider, {
-          speed: 800,
-          slidesPerView: "auto",
-          breakpoints: {
-            // mobile
-            320: {
-              spaceBetween: 16
-            },
-            // tablet
-            768: {
-              spaceBetween: 24
-            },
-            // desktop
-            992: {
-              spaceBetween: 48
-            }
-          },
-          loop: false,
-          centeredSlides: false,
-          allowTouchMove: true,
-          slideActiveClass: ACTIVE_CLASS,
-          slideDuplicateActiveClass: ACTIVE_CLASS,
-          navigation: {
-            nextEl: nextButtonEl,
-            prevEl: previousButtonEl,
-            disabledClass: DISABLED_CLASS
-          },
-          on: {
-            slideChange: function() {
-            }
-          }
-        });
-      });
-    };
-    const caseGallerySlider = function() {
-      const COMPONENT = ".case-body-slider_component";
-      const NEXT_BUTTON = ".swiper-next";
-      const PREVIOUS_BUTTON = ".swiper-prev";
-      const ACTIVE_CLASS = "is-active";
-      const DISABLED_CLASS = "is-disabled";
-      const components = gsap.utils.toArray(COMPONENT);
-      components.forEach(function(component) {
-        if (!component) return;
-        const nextButtonEl = component.querySelector(NEXT_BUTTON);
-        const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-        const slider = component.querySelector(".swiper");
-        if (!slider) return;
-        const swiper = new Swiper(slider, {
-          speed: 800,
-          slidesPerView: "auto",
-          spaceBetween: 16,
-          loop: false,
-          centeredSlides: false,
-          allowTouchMove: true,
-          slideActiveClass: ACTIVE_CLASS,
-          slideDuplicateActiveClass: ACTIVE_CLASS,
-          navigation: {
-            nextEl: nextButtonEl,
-            prevEl: previousButtonEl,
-            disabledClass: DISABLED_CLASS
-          }
-        });
-      });
-    };
-    const careeersSlider = function() {
-      const COMPONENT = ".employee-testimonials_slider";
-      const NEXT_BUTTON = ".swiper-next";
-      const PREVIOUS_BUTTON = ".swiper-prev";
-      const ACTIVE_CLASS = "is-active";
-      const DISABLED_CLASS = "is-disabled";
-      const components = gsap.utils.toArray(COMPONENT);
-      components.forEach(function(component) {
-        if (!component) return;
-        const nextButtonEl = component.querySelector(NEXT_BUTTON);
-        const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-        const slider = component;
-        if (!slider) return;
-        const swiper = new Swiper(slider, {
-          speed: 800,
-          slidesPerView: "auto",
-          spaceBetween: 32,
-          loop: false,
-          centeredSlides: false,
-          allowTouchMove: true,
-          slideActiveClass: ACTIVE_CLASS,
-          slideDuplicateActiveClass: ACTIVE_CLASS,
-          navigation: {
-            nextEl: nextButtonEl,
-            prevEl: previousButtonEl,
-            disabledClass: DISABLED_CLASS
-          },
-          on: {
-            slideChange: function() {
-            }
-          }
-        });
-      });
-    };
-    const landownersSlider = function() {
-      const COMPONENT = ".landowner-testimonials_component";
+    const createSlider = function(components, options, modules) {
+      const SLIDER = ".swiper";
       const NEXT_BUTTON = ".swiper-next";
       const PREVIOUS_BUTTON = ".swiper-prev";
       const BULLET_WRAP = ".swiper-bullet-wrapper";
       const ACTIVE_CLASS = "is-active";
       const DISABLED_CLASS = "is-disabled";
-      const components = [...document.querySelectorAll(COMPONENT)];
+      const swipersArray = [];
       components.forEach(function(component) {
         if (!component) return;
-        const nextButtonEl = component.querySelector(NEXT_BUTTON);
-        const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-        const bulletsEl = component.querySelector(BULLET_WRAP);
-        const slider = component.querySelector(".swiper");
+        const slider = component.querySelector(SLIDER);
         if (!slider) return;
-        const swiper = new Swiper(slider, {
+        const defaultSettings = {
           speed: 800,
-          slidesPerView: 1,
-          spaceBetween: 32,
+          spaceBetween: 16,
           loop: false,
-          centeredSlides: true,
-          allowTouchMove: false,
+          centeredSlides: false,
+          allowTouchMove: true,
           slideActiveClass: ACTIVE_CLASS,
-          navigation: {
-            nextEl: nextButtonEl,
-            prevEl: previousButtonEl,
-            disabledClass: DISABLED_CLASS
-          },
-          pagination: {
-            type: "bullets",
-            el: bulletsEl,
-            bulletActiveClass: ACTIVE_CLASS,
-            bulletClass: "swiper-bullet",
-            bulletElement: "button",
-            clickable: true
-          }
-        });
+          slideDuplicateActiveClass: ACTIVE_CLASS
+        };
+        let finalModules = {};
+        if (modules.navigation === true) {
+          const nextButtonEl = component.querySelector(NEXT_BUTTON);
+          const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
+          const navigationSettings = {
+            navigation: {
+              nextEl: nextButtonEl,
+              prevEl: previousButtonEl,
+              disabledClass: DISABLED_CLASS
+            }
+          };
+          finalModules = { ...finalModules, ...navigationSettings };
+        }
+        if (modules.pagination === true) {
+          const bulletsEl = component.querySelector(BULLET_WRAP);
+          const paginationSettings = {
+            pagination: {
+              type: "bullets",
+              el: bulletsEl,
+              bulletActiveClass: ACTIVE_CLASS,
+              bulletClass: "swiper-bullet",
+              bulletElement: "button",
+              clickable: true
+            }
+          };
+          finalModules = { ...finalModules, ...paginationSettings };
+        }
+        const swiperSettings = { ...defaultSettings, ...finalModules, ...options };
+        const swiper = new Swiper(slider, swiperSettings);
+        swipersArray.push(swiper);
       });
+      return swipersArray;
+    };
+    const caseGallerySlider = function() {
+      const COMPONENT = ".case-gallery-slider_component";
+      const components = [...document.querySelectorAll(COMPONENT)];
+      const options = {
+        slidesPerView: "auto",
+        loop: true
+      };
+      const modules = {
+        navigation: true,
+        pagination: false,
+        autoplay: false
+      };
+      const sliders = createSlider(components, options, modules);
+    };
+    const caseNewsSlider = function() {
+      const COMPONENT = ".case-news-slider_component";
+      const components = [...document.querySelectorAll(COMPONENT)];
+      const options = {
+        slidesPerView: "auto",
+        spaceBetween: 16,
+        loop: false,
+        centeredSlides: false
+      };
+      const modules = {
+        navigation: true
+      };
+      const sliders = createSlider(components, options, modules);
+    };
+    const featuredProjectsSlider = function() {
+      const COMPONENT = ".projects-slider_component";
+      const components = [...document.querySelectorAll(COMPONENT)];
+      const options = {
+        slidesPerView: "auto",
+        breakpoints: {
+          // mobile
+          320: {
+            spaceBetween: 16
+          },
+          // tablet
+          768: {
+            spaceBetween: 24
+          },
+          // desktop
+          992: {
+            spaceBetween: 48
+          }
+        }
+      };
+      const modules = {
+        navigation: true
+      };
+      const sliders = createSlider(components, options, modules);
+    };
+    const careeersSlider = function() {
+      const COMPONENT = ".employee-testimonials_component";
+      const components = [...document.querySelectorAll(COMPONENT)];
+      const options = {
+        slidesPerView: "auto",
+        breakpoints: {
+          // mobile
+          320: {
+            spaceBetween: 16
+          },
+          // tablet
+          768: {
+            spaceBetween: 24
+          },
+          // desktop
+          992: {
+            spaceBetween: 32
+          }
+        }
+      };
+      const modules = {
+        navigation: true,
+        pagination: false
+      };
+      const sliders = createSlider(components, options, modules);
+    };
+    const landownersSlider = function() {
+      const COMPONENT = ".landowner-testimonials_component";
+      const components = [...document.querySelectorAll(COMPONENT)];
+      const options = {
+        slidesPerView: 1,
+        spaceBetween: 32,
+        loop: false,
+        centeredSlides: true
+      };
+      const modules = {
+        navigation: true,
+        pagination: true
+      };
+      const sliders = createSlider(components, options, modules);
     };
     let mm = gsap.matchMedia();
     mm.add(
@@ -251,6 +249,7 @@
         featuredProjectsSlider();
         landownersSlider();
         caseGallerySlider();
+        caseNewsSlider();
       }
     );
   });
