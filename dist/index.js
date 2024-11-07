@@ -7,250 +7,42 @@
 
   // src/index.js
   document.addEventListener("DOMContentLoaded", function() {
-    if (gsap.ScrollTrigger !== void 0) {
-      gsap.registerPlugin(ScrollTrigger);
-    }
-    const attr = function(defaultVal, attrVal) {
-      const defaultValType = typeof defaultVal;
-      if (typeof attrVal !== "string" || attrVal.trim() === "") return defaultVal;
-      if (attrVal === "true" && defaultValType === "boolean") return true;
-      if (attrVal === "false" && defaultValType === "boolean") return false;
-      if (isNaN(attrVal) && defaultValType === "string") return attrVal;
-      if (!isNaN(attrVal) && defaultValType === "number") return +attrVal;
-      return defaultVal;
-    };
-    const runSplit = function(text, types = "lines, words") {
-      if (!text) return;
-      typeSplit = new SplitType(text, {
-        types
-      });
-      return typeSplit;
-    };
-    const projectsMap = function(isMobile) {
-      const WRAP = ".map_wrap";
-      const STATE_PATH = "data-state-path";
-      const STATE_POINT = "data-state-point";
-      const ACTIVE_CLASS = "is-active";
-      const wrap = document.querySelector(WRAP);
-      const statePaths = gsap.utils.toArray(`[${STATE_PATH}]`);
-      const statePoints = gsap.utils.toArray(`[${STATE_POINT}]`);
-      if (!wrap) return;
-      statePaths.forEach((statePath, index) => {
-        const id = statePath.getAttribute(STATE_PATH);
-        const statePoint = document.querySelector(`[${STATE_POINT}=${id}]`);
-        if (!statePoint) return;
-        const calculatePosition = function() {
-          console.log("calc");
-          const wrapRect = wrap.getBoundingClientRect();
-          const wrapWidth = wrapRect.right - wrapRect.left;
-          const stateRect = statePath.getBoundingClientRect();
-          const statePointWidth = statePoint.getBoundingClientRect().right - statePoint.getBoundingClientRect().left;
-          let left = Math.round(stateRect.right - wrapRect.left);
-          let right = Math.round(left - (stateRect.right - stateRect.left) - statePointWidth);
-          if (wrapWidth * 0.6 > left) {
-            statePoint.style.left = left + "px";
-          } else {
-            statePoint.style.left = right + "px";
-          }
-          let top = Math.round(stateRect.top - wrapRect.top);
-          statePoint.style.top = top + -30 + "px";
-        };
-        if (!isMobile) {
-          calculatePosition();
-        }
-        let windowWidth = window.innerWidth;
-        window.addEventListener("resize", function() {
-          if (window.innerWidth !== windowWidth) {
-            windowWidth = window.innerWidth;
-            calculatePosition();
-          }
+    const dynamicForm = function() {
+      const FORM_BLOCK = "data-form-block";
+      const FORM_SUCCESS = "data-form-success";
+      const FORM_BUTTON = "data-form-button";
+      const DOWNLOAD_BUTTON = "data-download-button";
+      const HIDDEN_FIELD = "data-form-hidden-input";
+      const SUBMIT_COOKIE = "form-submitted";
+      const form = document.querySelector(FORM_BLOCK);
+      const successMessage = document.querySelector(FORM_SUCCESS);
+      const hiddenInput = document.querySelector(HIDDEN_FIELD);
+      const formButtons = [...document.querySelectorAll(FORM_BUTTON)];
+      const downloadButtons = [...document.querySelectorAll(DOWNLOAD_BUTTON)];
+      if (!form || formButtons.length === 0) return;
+      let redirectUrl;
+      if (localStorage.getItem(SUBMIT_COOKIE) !== null) {
+        formButtons.forEach((formButton, index) => {
+          formButton.style.display = "none";
         });
-        statePath.addEventListener("mouseenter", function(e) {
-          statePoints.forEach((point, index2) => {
-            point.classList.remove(ACTIVE_CLASS);
-          });
-          statePaths.forEach((path, index2) => {
-            path.classList.remove(ACTIVE_CLASS);
-          });
-          statePoint.classList.add(ACTIVE_CLASS);
-          statePath.classList.add(ACTIVE_CLASS);
+        downloadButtons.forEach((downloadButton, index) => {
+          downloadButton.style.display = "block";
         });
-      });
-      wrap.addEventListener("mouseleave", function(e) {
-        statePoints.forEach((point, index) => {
-          point.classList.remove(ACTIVE_CLASS);
-        });
-        statePaths.forEach((path, index) => {
-          path.classList.remove(ACTIVE_CLASS);
-        });
-      });
-    };
-    const createSlider = function(components, options, modules) {
-      const SLIDER = ".swiper";
-      const NEXT_BUTTON = ".swiper-next";
-      const PREVIOUS_BUTTON = ".swiper-prev";
-      const BULLET_WRAP = ".swiper-bullet-wrapper";
-      const ACTIVE_CLASS = "is-active";
-      const DISABLED_CLASS = "is-disabled";
-      const swipersArray = [];
-      components.forEach(function(component) {
-        if (!component) return;
-        const slider = component.querySelector(SLIDER);
-        if (!slider) return;
-        const defaultSettings = {
-          speed: 800,
-          spaceBetween: 16,
-          loop: false,
-          centeredSlides: false,
-          allowTouchMove: true,
-          slideActiveClass: ACTIVE_CLASS,
-          slideDuplicateActiveClass: ACTIVE_CLASS
-        };
-        let finalModules = {};
-        if (modules.navigation === true) {
-          const nextButtonEl = component.querySelector(NEXT_BUTTON);
-          const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-          const navigationSettings = {
-            navigation: {
-              nextEl: nextButtonEl,
-              prevEl: previousButtonEl,
-              disabledClass: DISABLED_CLASS
-            }
-          };
-          finalModules = { ...finalModules, ...navigationSettings };
-        }
-        if (modules.pagination === true) {
-          const bulletsEl = component.querySelector(BULLET_WRAP);
-          const paginationSettings = {
-            pagination: {
-              type: "bullets",
-              el: bulletsEl,
-              bulletActiveClass: ACTIVE_CLASS,
-              bulletClass: "swiper-bullet",
-              bulletElement: "button",
-              clickable: true
-            }
-          };
-          finalModules = { ...finalModules, ...paginationSettings };
-        }
-        const swiperSettings = { ...defaultSettings, ...finalModules, ...options };
-        const swiper = new Swiper(slider, swiperSettings);
-        swipersArray.push(swiper);
-      });
-      return swipersArray;
-    };
-    const caseGallerySlider = function() {
-      const COMPONENT = ".case-gallery-slider_component";
-      const components = [...document.querySelectorAll(COMPONENT)];
-      const options = {
-        slidesPerView: "auto",
-        loop: true
-      };
-      const modules = {
-        navigation: true,
-        pagination: false,
-        autoplay: false
-      };
-      const sliders = createSlider(components, options, modules);
-    };
-    const caseNewsSlider = function() {
-      const COMPONENT = ".case-news-slider_component";
-      const components = [...document.querySelectorAll(COMPONENT)];
-      const options = {
-        slidesPerView: "auto",
-        spaceBetween: 16,
-        loop: false,
-        centeredSlides: false
-      };
-      const modules = {
-        navigation: true
-      };
-      const sliders = createSlider(components, options, modules);
-    };
-    const featuredProjectsSlider = function() {
-      const COMPONENT = ".projects-slider_component";
-      const components = [...document.querySelectorAll(COMPONENT)];
-      const options = {
-        slidesPerView: "auto",
-        breakpoints: {
-          // mobile
-          320: {
-            spaceBetween: 16
-          },
-          // tablet
-          768: {
-            spaceBetween: 24
-          },
-          // desktop
-          992: {
-            spaceBetween: 48
-          }
-        }
-      };
-      const modules = {
-        navigation: true
-      };
-      const sliders = createSlider(components, options, modules);
-    };
-    const careeersSlider = function() {
-      const COMPONENT = ".employee-testimonials_component";
-      const components = [...document.querySelectorAll(COMPONENT)];
-      const options = {
-        slidesPerView: "auto",
-        breakpoints: {
-          // mobile
-          320: {
-            spaceBetween: 16
-          },
-          // tablet
-          768: {
-            spaceBetween: 24
-          },
-          // desktop
-          992: {
-            spaceBetween: 32
-          }
-        }
-      };
-      const modules = {
-        navigation: true,
-        pagination: false
-      };
-      const sliders = createSlider(components, options, modules);
-    };
-    const landownersSlider = function() {
-      const COMPONENT = ".landowner-testimonials_component";
-      const components = [...document.querySelectorAll(COMPONENT)];
-      const options = {
-        slidesPerView: 1,
-        spaceBetween: 32,
-        loop: false,
-        centeredSlides: true
-      };
-      const modules = {
-        navigation: true,
-        pagination: true
-      };
-      const sliders = createSlider(components, options, modules);
-    };
-    let mm = gsap.matchMedia();
-    mm.add(
-      {
-        //This is the conditions object
-        isMobile: "(max-width: 767px)",
-        isTablet: "(min-width: 768px)  and (max-width: 991px)",
-        isDesktop: "(min-width: 992px)",
-        reduceMotion: "(prefers-reduced-motion: reduce)"
-      },
-      (gsapContext) => {
-        let { isMobile, isTablet, isDesktop, reduceMotion } = gsapContext.conditions;
-        projectsMap(isMobile);
-        careeersSlider();
-        featuredProjectsSlider();
-        landownersSlider();
-        caseGallerySlider();
-        caseNewsSlider();
       }
-    );
+      formButtons.forEach((formButton, index) => {
+        formButton.addEventListener("click", () => {
+          redirectUrl = formButton.getAttribute(FORM_BUTTON);
+          hiddenInput.value = redirectUrl;
+        });
+      });
+      let observer = new MutationObserver(function() {
+        if (successMessage.style.display == "block") {
+          localStorage.setItem(SUBMIT_COOKIE, "true");
+          window.location.href = redirectUrl;
+        }
+      });
+      observer.observe(successMessage, { attributes: true, childList: true });
+    };
+    dynamicForm();
   });
 })();
