@@ -2,7 +2,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   //////////////////////////////
   const dynamicForm = function () {
-    //selecctors
+    //selectors
     const FORM_BLOCK = 'data-form-block';
     const FORM_SUCCESS = 'data-form-success';
     const FORM_BUTTON = 'data-form-button'; // value of this attribute should be the target url on form submission
