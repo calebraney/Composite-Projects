@@ -14,12 +14,12 @@
       const DOWNLOAD_BUTTON = "data-download-button";
       const HIDDEN_FIELD = "data-form-hidden-input";
       const SUBMIT_COOKIE = "form-submitted";
-      const form = document.querySelector(FORM_BLOCK);
-      const successMessage = document.querySelector(FORM_SUCCESS);
-      const hiddenInput = document.querySelector(HIDDEN_FIELD);
-      const formButtons = [...document.querySelectorAll(FORM_BUTTON)];
-      const downloadButtons = [...document.querySelectorAll(DOWNLOAD_BUTTON)];
-      if (!form || formButtons.length === 0) return;
+      const form = document.querySelector(`[${FORM_BLOCK}]`);
+      const successMessage = document.querySelector(`[${FORM_SUCCESS}]`);
+      const hiddenInput = document.querySelector(`[${HIDDEN_FIELD}]`);
+      const formButtons = [...document.querySelectorAll(`[${FORM_BUTTON}]`)];
+      const downloadButtons = [...document.querySelectorAll(`[${DOWNLOAD_BUTTON}]`)];
+      if (formButtons.length === 0) return;
       let redirectUrl;
       if (localStorage.getItem(SUBMIT_COOKIE) !== null) {
         formButtons.forEach((formButton, index) => {
@@ -32,6 +32,7 @@
       formButtons.forEach((formButton, index) => {
         formButton.addEventListener("click", () => {
           redirectUrl = formButton.getAttribute(FORM_BUTTON);
+          console.log(redirectUrl);
           hiddenInput.value = redirectUrl;
         });
       });

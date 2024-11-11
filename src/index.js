@@ -1,4 +1,4 @@
-// v1.0 flowbuilder Form Interaction
+// v1.1 flowbuilder Form Interaction
 document.addEventListener('DOMContentLoaded', function () {
   //////////////////////////////
   const dynamicForm = function () {
@@ -10,15 +10,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const HIDDEN_FIELD = 'data-form-hidden-input';
     const SUBMIT_COOKIE = 'form-submitted';
     //elements
-    const form = document.querySelector(FORM_BLOCK);
-    const successMessage = document.querySelector(FORM_SUCCESS);
-    const hiddenInput = document.querySelector(HIDDEN_FIELD);
+    const form = document.querySelector(`[${FORM_BLOCK}]`);
+    const successMessage = document.querySelector(`[${FORM_SUCCESS}]`);
+    const hiddenInput = document.querySelector(`[${HIDDEN_FIELD}]`);
 
-    const formButtons = [...document.querySelectorAll(FORM_BUTTON)];
-    const downloadButtons = [...document.querySelectorAll(DOWNLOAD_BUTTON)];
-    if (!form || formButtons.length === 0) return;
+    const formButtons = [...document.querySelectorAll(`[${FORM_BUTTON}]`)];
+    const downloadButtons = [...document.querySelectorAll(`[${DOWNLOAD_BUTTON}]`)];
+    if (formButtons.length === 0) return;
     let redirectUrl;
-
     //on load check for cookie and if set change the buttons visibility
     if (localStorage.getItem(SUBMIT_COOKIE) !== null) {
       // hide form buttons
@@ -35,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
       //when button is clicked updated hidden form field and redirect url
       formButton.addEventListener('click', () => {
         redirectUrl = formButton.getAttribute(FORM_BUTTON);
+        console.log(redirectUrl);
         hiddenInput.value = redirectUrl;
       });
     });
