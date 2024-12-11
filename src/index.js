@@ -15,13 +15,13 @@ document.addEventListener('DOMContentLoaded', function () {
     components.forEach(function (component) {
       if (!component) return;
       const slider = component.querySelector(SLIDER);
-      const nextButtonEl = component.querySelector(NEXT_BUTTON);
-      const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
+      // const nextButtonEl = component.querySelector(NEXT_BUTTON);
+      // const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
       if (!slider || !component) return;
 
       const swiper = new Swiper(slider, {
         slidesPerView: 1,
-        spaceBetween: 24,
+        spaceBetween: 56,
         speed: 800,
         loop: true,
         effect: 'fade',
@@ -37,11 +37,6 @@ document.addEventListener('DOMContentLoaded', function () {
         keyboard: false,
         slideActiveClass: ACTIVE_CLASS,
         slideDuplicateActiveClass: ACTIVE_CLASS,
-        // navigation: {
-        //   nextEl: nextButtonEl,
-        //   prevEl: previousButtonEl,
-        //   disabledClass: DISABLED_CLASS,
-        // },
         on: {
           slideChange: function () {
             // console.log('title swiper:', this.activeIndex);
