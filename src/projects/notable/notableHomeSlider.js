@@ -24,24 +24,15 @@ document.addEventListener('DOMContentLoaded', function () {
         spaceBetween: 24,
         speed: 800,
         loop: true,
-        effect: 'fade',
-        fadeEffect: {
-          crossFade: true,
-        },
-        autoplay: {
-          delay: 3000,
-        },
-        parallax: true,
-        allowTouchMove: false,
         mousewheel: false,
         keyboard: false,
         slideActiveClass: ACTIVE_CLASS,
         slideDuplicateActiveClass: ACTIVE_CLASS,
-        // navigation: {
-        //   nextEl: nextButtonEl,
-        //   prevEl: previousButtonEl,
-        //   disabledClass: DISABLED_CLASS,
-        // },
+        navigation: {
+          nextEl: nextButtonEl,
+          prevEl: previousButtonEl,
+          disabledClass: DISABLED_CLASS,
+        },
         on: {
           slideChange: function () {
             // console.log('title swiper:', this.activeIndex);
