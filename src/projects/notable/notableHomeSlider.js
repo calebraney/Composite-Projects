@@ -1,5 +1,5 @@
 // Notable home slider
-// v1
+// v1.1
 document.addEventListener('DOMContentLoaded', function () {
   const homeSlider = function () {
     //Swiper selectors
@@ -15,31 +15,47 @@ document.addEventListener('DOMContentLoaded', function () {
     components.forEach(function (component) {
       if (!component) return;
       const slider = component.querySelector(SLIDER);
-      const nextButtonEl = component.querySelector(NEXT_BUTTON);
-      const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
+      // const nextButtonEl = component.querySelector(NEXT_BUTTON);
+      // const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
       if (!slider || !component) return;
 
       const swiper = new Swiper(slider, {
         slidesPerView: 1,
-        spaceBetween: 24,
+        spaceBetween: 56,
         speed: 800,
         loop: true,
+        autoplay: {
+          delay: 3000,
+        },
+        parallax: true,
+        allowTouchMove: false,
         mousewheel: false,
         keyboard: false,
         slideActiveClass: ACTIVE_CLASS,
         slideDuplicateActiveClass: ACTIVE_CLASS,
-        navigation: {
-          nextEl: nextButtonEl,
-          prevEl: previousButtonEl,
-          disabledClass: DISABLED_CLASS,
-        },
-        on: {
-          slideChange: function () {
-            // console.log('title swiper:', this.activeIndex);
+        effect: 'creative',
+        creativeEffect: {
+          next: {
+            // Array with translate X, Y and Z values
+            translate: ['60%', 0, 0],
+            opacity: 0,
+          },
+          prev: {
+            // Array with translate X, Y and Z values
+            translate: ['-60%', 0, 0],
+            opacity: 0,
           },
         },
+        // fadeEffect: {
+        //   crossFade: true,
+        // },
+
+        // on: {
+        //   slideChange: function () {
+        //     // console.log('title swiper:', this.activeIndex);
+        //   },
+        // },
       });
-      console.log(swiper);
     });
   };
   homeSlider();

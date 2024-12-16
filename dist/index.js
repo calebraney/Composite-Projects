@@ -24,10 +24,6 @@
           spaceBetween: 56,
           speed: 800,
           loop: true,
-          effect: "fade",
-          fadeEffect: {
-            crossFade: true
-          },
           autoplay: {
             delay: 3e3
           },
@@ -37,12 +33,28 @@
           keyboard: false,
           slideActiveClass: ACTIVE_CLASS,
           slideDuplicateActiveClass: ACTIVE_CLASS,
-          on: {
-            slideChange: function() {
+          effect: "creative",
+          creativeEffect: {
+            next: {
+              // Array with translate X, Y and Z values
+              translate: ["60%", 0, 0],
+              opacity: 0
+            },
+            prev: {
+              // Array with translate X, Y and Z values
+              translate: ["-60%", 0, 0],
+              opacity: 0
             }
           }
+          // fadeEffect: {
+          //   crossFade: true,
+          // },
+          // on: {
+          //   slideChange: function () {
+          //     // console.log('title swiper:', this.activeIndex);
+          //   },
+          // },
         });
-        console.log(swiper);
       });
     };
     homeSlider();
