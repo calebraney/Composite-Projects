@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const WRAP = '[data-ix-platform="wrap"]';
     const ROW = '[data-ix-platform="row"]';
     const CARD = '[data-ix-platform="card"]';
+    const CARD_TEXT = '[data-ix-platform="card"] .ai-platform-card_text';
     const SPACER = '[data-ix-platform="spacer"]';
 
     const ACTIVE_CLASS = 'is-active';
@@ -19,52 +20,64 @@ document.addEventListener('DOMContentLoaded', function () {
       let flipCtx;
       const spacer = spacers[index];
       const cards = [...row.querySelectorAll(CARD)];
-      console.log(row, spacer);
-      let startState;
-      let endState;
-
-      const flipConfig = {
-        ease: 'none',
-        absolute: false,
-        scale: false,
-      };
-      const stateConfig = {
-        nested: true,
-        props: 'opacity',
-      };
+      const cardText = [...row.querySelectorAll(CARD_TEXT)];
 
       //guard clause
       if (!row) return;
 
-      const scrollIn = function () {
+      const scrollAnimation = function () {
         flipCtx && flipCtx.revert();
 
         flipCtx = gsap.context(() => {
-          //get state
+          const flipConfig = {
+            ease: 'none',
+            absolute: false,
+            scale: false,
+          };
+          const stateConfig = {
+            nested: true,
+            props: 'opacity,color',
+          };
+
+          //get starting state
           let startState = Flip.getState([row, cards], stateConfig);
           //modify state
           cards.forEach(function (card, index) {
             card.classList.add(ACTIVE_CLASS);
           });
+          //get ending state
           let endState = Flip.getState([row, cards], stateConfig);
-          //modify state
-          // cards.forEach(function (card, index) {
-          //   card.classList.remove(ACTIVE_CLASS);
-          // });
 
           const flip = Flip.fromTo(startState, endState, flipConfig);
+          const tl = gsap.timeline({
+            paused: true,
+          });
+          tl.add(flip);
+          tl.fromTo(cardText, { opacity: 0.25 }, { opacity: 1 }, '<');
 
           ScrollTrigger.create({
             trigger: spacer,
             start: 'top 100%',
-            end: 'top 50%',
+            end: 'top 60%',
             scrub: true,
-            markers: true,
-            animation: flip,
+            markers: false,
+            onUpdate: (scroll) => {
+              tl.progress(scroll.progress);
+            },
+          });
+          ScrollTrigger.create({
+            trigger: spacer,
+            start: 'top 40%',
+            end: 'top 0%',
+            scrub: true,
+            markers: false,
+            onUpdate: (scroll) => {
+              tl.progress(1 - scroll.progress);
+            },
           });
         });
       };
-      scrollIn();
+      scrollAnimation();
     });
   };
 
@@ -73,6 +86,21 @@ document.addEventListener('DOMContentLoaded', function () {
   mm.add('(min-width: 768px)', () => {
     // the code will only run if the media query matches
     platformScroll();
+
+    //force page to reload on resize
+    let windowWidth = window.innerWidth;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth !== windowWidth) {
+        location.reload();
+        console.log('reload');
+      }
+    });
+
+    //force page to top on reaload
+    window.onbeforeunload = function () {
+      window.scrollTo(0, 0);
+    };
+
     return () => {
       //this code will run when the media query stops matching
     };
@@ -217,4 +245,38 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       masterTL();
+*/
+
+/////////////////////////////
+// WORKING ONE WAY
+/*
+  const scrollAnimation = function () {
+        flipCtx && flipCtx.revert();
+
+        flipCtx = gsap.context(() => {
+          //get state
+          let startState = Flip.getState([row, cards], stateConfig);
+          //modify state
+          cards.forEach(function (card, index) {
+            card.classList.add(ACTIVE_CLASS);
+          });
+          let endState = Flip.getState([row, cards], stateConfig);
+          //modify state
+          // cards.forEach(function (card, index) {
+          //   card.classList.remove(ACTIVE_CLASS);
+          // });
+
+          const flip = Flip.fromTo(startState, endState, flipConfig);
+
+          ScrollTrigger.create({
+            trigger: spacer,
+            start: 'top 100%',
+            end: 'top 50%',
+            scrub: true,
+            markers: true,
+            animation: flip,
+          });
+        });
+      };
+      scrollAnimation();
 */
