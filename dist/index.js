@@ -7,56 +7,68 @@
 
   // src/index.js
   document.addEventListener("DOMContentLoaded", function() {
-    const homeSlider = function() {
-      const COMPONENT = ".notable_slider_component";
-      const SLIDER = ".swiper";
-      const NEXT_BUTTON = ".swiper-next";
-      const PREVIOUS_BUTTON = ".swiper-prev";
+    const platformScroll = function() {
+      const WRAP = '[data-ix-platform="wrap"]';
+      const ROW = '[data-ix-platform="row"]';
+      const CARD = '[data-ix-platform="card"]';
+      const SPACER = '[data-ix-platform="spacer"]';
       const ACTIVE_CLASS = "is-active";
-      const DISABLED_CLASS = "is-disabled";
-      const components = [...document.querySelectorAll(COMPONENT)];
-      components.forEach(function(component) {
-        if (!component) return;
-        const slider = component.querySelector(SLIDER);
-        if (!slider || !component) return;
-        const swiper = new Swiper(slider, {
-          slidesPerView: 1,
-          spaceBetween: 56,
-          speed: 800,
-          loop: true,
-          autoplay: {
-            delay: 3e3
-          },
-          parallax: true,
-          allowTouchMove: false,
-          mousewheel: false,
-          keyboard: false,
-          slideActiveClass: ACTIVE_CLASS,
-          slideDuplicateActiveClass: ACTIVE_CLASS,
-          effect: "creative",
-          creativeEffect: {
-            next: {
-              // Array with translate X, Y and Z values
-              translate: ["60%", 0, 0],
-              opacity: 0
-            },
-            prev: {
-              // Array with translate X, Y and Z values
-              translate: ["-60%", 0, 0],
-              opacity: 0
-            }
-          }
-          // fadeEffect: {
-          //   crossFade: true,
-          // },
-          // on: {
-          //   slideChange: function () {
-          //     // console.log('title swiper:', this.activeIndex);
-          //   },
-          // },
-        });
+      const rows = [...document.querySelectorAll(ROW)];
+      const spacers = [...document.querySelectorAll(SPACER)];
+      if (rows.length === 0) return;
+      rows.forEach(function(row, index) {
+        let flipCtx;
+        const spacer = spacers[index];
+        const cards = [...row.querySelectorAll(CARD)];
+        console.log(row, spacer);
+        if (!row) return;
+        const scrollAnimation = function() {
+          flipCtx && flipCtx.revert();
+          flipCtx = gsap.context(() => {
+            let startState = Flip.getState([row, cards], { nested: true, props: "opacity" });
+            cards.forEach(function(card, index2) {
+              card.classList.add(ACTIVE_CLASS);
+            });
+            let endState = Flip.getState([row, cards], { nested: true, props: "opacity" });
+            const flipConfig = {
+              ease: "none",
+              absolute: false,
+              scale: false
+            };
+            const tl = Flip.fromTo(startState, endState, {
+              ease: "none",
+              absolute: false,
+              scale: false,
+              scrollTrigger: {
+                trigger: spacer,
+                start: "top 100%",
+                end: "top 50%",
+                scrub: true,
+                markers: true
+              }
+            });
+            const tl2 = Flip.to(startState, {
+              ease: "none",
+              absolute: false,
+              scale: false,
+              scrollTrigger: {
+                trigger: spacer,
+                start: "bottom 0%",
+                end: "bottom 50%",
+                scrub: true,
+                markers: true
+              }
+            });
+          });
+        };
+        scrollAnimation();
       });
     };
-    homeSlider();
+    let mm = gsap.matchMedia();
+    mm.add("(min-width: 768px)", () => {
+      platformScroll();
+      return () => {
+      };
+    });
   });
 })();
