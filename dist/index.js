@@ -48,7 +48,7 @@
             tl.fromTo(cardText, { opacity: 0.25 }, { opacity: 1 }, "<");
             ScrollTrigger.create({
               trigger: spacer,
-              start: "top 100%",
+              start: "clamp(top 100%)",
               end: "top 60%",
               scrub: true,
               markers: false,
@@ -83,8 +83,6 @@
       });
       window.onbeforeunload = function() {
         window.scrollTo(0, 0);
-      };
-      return () => {
       };
     });
   });

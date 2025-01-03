@@ -48,16 +48,20 @@ document.addEventListener('DOMContentLoaded', function () {
           //get ending state
           let endState = Flip.getState([row, cards], stateConfig);
 
+          //create the flip from and to each state
           const flip = Flip.fromTo(startState, endState, flipConfig);
+          //create a timeline and add the flip to it
           const tl = gsap.timeline({
             paused: true,
           });
           tl.add(flip);
+          //optionally add other tweens into the timeline
           tl.fromTo(cardText, { opacity: 0.25 }, { opacity: 1 }, '<');
 
+          //update the timeline based on a scrolltrigger
           ScrollTrigger.create({
             trigger: spacer,
-            start: 'top 100%',
+            start: 'clamp(top 100%)',
             end: 'top 60%',
             scrub: true,
             markers: false,
@@ -100,183 +104,5 @@ document.addEventListener('DOMContentLoaded', function () {
     window.onbeforeunload = function () {
       window.scrollTo(0, 0);
     };
-
-    return () => {
-      //this code will run when the media query stops matching
-    };
   });
 });
-
-///////////////////////////////////////////
-
-// animate with Flip
-// const tl = Flip.fromTo(startState, endState, {
-//   ease: 'none',
-//   absolute: true,
-//   scale: true,
-//   scrollTrigger: {
-//     trigger: spacer,
-//     start: 'top 100%',
-//     end: 'top 50%',
-//     scrub: true,
-//     markers: true,
-//   },
-// });
-// animate with Flip
-// const tlOut = Flip.to(startState, {
-//   ease: 'none',
-//   absolute: true,
-//   scale: true,
-//   scrollTrigger: {
-//     trigger: spacer,
-//     start: 'bottom 0%',
-//     end: 'bottom 50%',
-//     scrub: true,
-//     markers: true,
-//   },
-// });
-
-// ScrollTrigger.create({
-//   trigger: spacer,
-//   start: 'top 100%',
-//   end: 'top 50%',
-//   scrub: true,
-//   markers: true,
-//   animation: flipIn,
-// });
-// const reversedFlip = flipIn.reverse();
-
-// ScrollTrigger.create({
-//   trigger: spacer,
-//   start: 'bottom 99%',
-//   end: 'bottom 5%',
-//   scrub: true,
-//   markers: true,
-//   animation: reversedFlip,
-// });
-
-/*
-  function getStates() {
-        //get state
-        startState = Flip.getState(cards, stateConfig);
-        //modify state
-        cards.forEach(function (card, index) {
-          card.classList.add(ACTIVE_CLASS);
-        });
-        endState = Flip.getState(cards, stateConfig);
-        //modify state
-        cards.forEach(function (card, index) {
-          card.classList.remove(ACTIVE_CLASS);
-        });
-      }
-
-      function flipActivateCard(tl) {
-        //get state
-        let state = Flip.getState(cards, stateConfig);
-        //modify state
-        cards.forEach(function (card, index) {
-          card.classList.add(ACTIVE_CLASS);
-        });
-
-        const flip = Flip.from(state, {
-          ease: 'none',
-          absolute: false,
-          scale: false,
-          // onComplete: () => tl.resume(),
-        });
-
-        return flip;
-      }
-
-      function flipDeactivateCard(tl) {
-        //get state
-        let state = Flip.getState(cards, stateConfig);
-        //modify state
-        cards.forEach(function (card, index) {
-          card.classList.remove(ACTIVE_CLASS);
-        });
-
-        const flip = Flip.from(state, {
-          ease: 'none',
-          absolute: false,
-          scale: false,
-          // onComplete: () => tl.resume(),
-        });
-        return flip;
-      }
-
-      function masterTL() {
-        flipCtx && flipCtx.revert();
-
-        flipCtx = gsap.context(() => {
-          // getStates();
-          const t1 = gsap.timeline({
-            scrollTrigger: {
-              trigger: spacer,
-              start: 'top 100%',
-              end: 'top 60%',
-              scrub: true,
-              markers: true,
-            },
-            onComplete: () => {
-              timeline2();
-            },
-          });
-          t1.add(flipActivateCard(t1));
-
-          const timeline2 = function () {
-            const t2 = gsap.timeline({
-              scrollTrigger: {
-                trigger: spacer,
-                start: 'top 40%',
-                end: 'top 0%',
-                scrub: true,
-                markers: true,
-              },
-            });
-            t2.add(flipDeactivateCard(t2));
-          };
-
-          // t1.add(expandSquares());
-          // t1.addPause('+=.5', () => flipDeactivateCard(t1));
-          // t1.call(flipSquaresToRow, null, ">")
-          // t1.call(flipSquaresToColumn, null, ">")
-        });
-      }
-
-      masterTL();
-*/
-
-/////////////////////////////
-// WORKING ONE WAY
-/*
-  const scrollAnimation = function () {
-        flipCtx && flipCtx.revert();
-
-        flipCtx = gsap.context(() => {
-          //get state
-          let startState = Flip.getState([row, cards], stateConfig);
-          //modify state
-          cards.forEach(function (card, index) {
-            card.classList.add(ACTIVE_CLASS);
-          });
-          let endState = Flip.getState([row, cards], stateConfig);
-          //modify state
-          // cards.forEach(function (card, index) {
-          //   card.classList.remove(ACTIVE_CLASS);
-          // });
-
-          const flip = Flip.fromTo(startState, endState, flipConfig);
-
-          ScrollTrigger.create({
-            trigger: spacer,
-            start: 'top 100%',
-            end: 'top 50%',
-            scrub: true,
-            markers: true,
-            animation: flip,
-          });
-        });
-      };
-      scrollAnimation();
-*/
