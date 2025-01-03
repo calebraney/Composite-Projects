@@ -20,108 +20,51 @@ document.addEventListener('DOMContentLoaded', function () {
       const spacer = spacers[index];
       const cards = [...row.querySelectorAll(CARD)];
       console.log(row, spacer);
+      let startState;
+      let endState;
+
+      const flipConfig = {
+        ease: 'none',
+        absolute: false,
+        scale: false,
+      };
+      const stateConfig = {
+        nested: true,
+        props: 'opacity',
+      };
 
       //guard clause
       if (!row) return;
-      const scrollAnimation = function () {
+
+      const scrollIn = function () {
         flipCtx && flipCtx.revert();
 
         flipCtx = gsap.context(() => {
           //get state
-          let startState = Flip.getState([row, cards], { nested: true, props: 'opacity' });
+          let startState = Flip.getState([row, cards], stateConfig);
           //modify state
           cards.forEach(function (card, index) {
             card.classList.add(ACTIVE_CLASS);
           });
-          let endState = Flip.getState([row, cards], { nested: true, props: 'opacity' });
+          let endState = Flip.getState([row, cards], stateConfig);
           //modify state
           // cards.forEach(function (card, index) {
           //   card.classList.remove(ACTIVE_CLASS);
           // });
 
-          const flipConfig = {
-            ease: 'none',
-            absolute: false,
-            scale: false,
-          };
-          // const flipIn = Flip.fromTo(startState, endState, flipConfig);
-          // const flipOut = Flip.to(startState, flipConfig);
-          const tl = Flip.fromTo(startState, endState, {
-            ease: 'none',
-            absolute: false,
-            scale: false,
-            scrollTrigger: {
-              trigger: spacer,
-              start: 'top 100%',
-              end: 'top 50%',
-              scrub: true,
-              markers: true,
-            },
+          const flip = Flip.fromTo(startState, endState, flipConfig);
+
+          ScrollTrigger.create({
+            trigger: spacer,
+            start: 'top 100%',
+            end: 'top 50%',
+            scrub: true,
+            markers: true,
+            animation: flip,
           });
-
-          const tl2 = Flip.to(startState, {
-            ease: 'none',
-            absolute: false,
-            scale: false,
-            scrollTrigger: {
-              trigger: spacer,
-              start: 'bottom 0%',
-              end: 'bottom 50%',
-              scrub: true,
-              markers: true,
-            },
-          });
-
-          ///////////////////////////////////////////
-
-          // animate with Flip
-          // const tl = Flip.fromTo(startState, endState, {
-          //   ease: 'none',
-          //   absolute: true,
-          //   scale: true,
-          //   scrollTrigger: {
-          //     trigger: spacer,
-          //     start: 'top 100%',
-          //     end: 'top 50%',
-          //     scrub: true,
-          //     markers: true,
-          //   },
-          // });
-          // animate with Flip
-          // const tlOut = Flip.to(startState, {
-          //   ease: 'none',
-          //   absolute: true,
-          //   scale: true,
-          //   scrollTrigger: {
-          //     trigger: spacer,
-          //     start: 'bottom 0%',
-          //     end: 'bottom 50%',
-          //     scrub: true,
-          //     markers: true,
-          //   },
-          // });
-
-          // ScrollTrigger.create({
-          //   trigger: spacer,
-          //   start: 'top 100%',
-          //   end: 'top 50%',
-          //   scrub: true,
-          //   markers: true,
-          //   animation: flipIn,
-          // });
-          // const reversedFlip = flipIn.reverse();
-
-          // ScrollTrigger.create({
-          //   trigger: spacer,
-          //   start: 'bottom 99%',
-          //   end: 'bottom 5%',
-          //   scrub: true,
-          //   markers: true,
-          //   animation: reversedFlip,
-          // });
         });
       };
-      scrollAnimation();
+      scrollIn();
     });
   };
 
@@ -136,56 +79,142 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+///////////////////////////////////////////
+
+// animate with Flip
+// const tl = Flip.fromTo(startState, endState, {
+//   ease: 'none',
+//   absolute: true,
+//   scale: true,
+//   scrollTrigger: {
+//     trigger: spacer,
+//     start: 'top 100%',
+//     end: 'top 50%',
+//     scrub: true,
+//     markers: true,
+//   },
+// });
+// animate with Flip
+// const tlOut = Flip.to(startState, {
+//   ease: 'none',
+//   absolute: true,
+//   scale: true,
+//   scrollTrigger: {
+//     trigger: spacer,
+//     start: 'bottom 0%',
+//     end: 'bottom 50%',
+//     scrub: true,
+//     markers: true,
+//   },
+// });
+
+// ScrollTrigger.create({
+//   trigger: spacer,
+//   start: 'top 100%',
+//   end: 'top 50%',
+//   scrub: true,
+//   markers: true,
+//   animation: flipIn,
+// });
+// const reversedFlip = flipIn.reverse();
+
+// ScrollTrigger.create({
+//   trigger: spacer,
+//   start: 'bottom 99%',
+//   end: 'bottom 5%',
+//   scrub: true,
+//   markers: true,
+//   animation: reversedFlip,
+// });
+
 /*
+  function getStates() {
+        //get state
+        startState = Flip.getState(cards, stateConfig);
+        //modify state
+        cards.forEach(function (card, index) {
+          card.classList.add(ACTIVE_CLASS);
+        });
+        endState = Flip.getState(cards, stateConfig);
+        //modify state
+        cards.forEach(function (card, index) {
+          card.classList.remove(ACTIVE_CLASS);
+        });
+      }
 
-function expandSquares() {
- const tween = gsap.to('.square', {
-    height: '50px',
-    width: '50px',
-    rotate: 360,
-  })
- 
- return tween 
-}
+      function flipActivateCard(tl) {
+        //get state
+        let state = Flip.getState(cards, stateConfig);
+        //modify state
+        cards.forEach(function (card, index) {
+          card.classList.add(ACTIVE_CLASS);
+        });
 
-function flipSquaresToRow(tl) {
-  squareContainer = document.querySelector('.square-container')
-  
-  const state = Flip.getState('.square')
-  squareContainer.style.gridTemplateColumns = 'repeat(9, 1fr)'
-  squareContainer.style.gridTemplateRows = '1fr'
-  squareContainer.style.gridAutoFlow = 'columns'
-  
-  const flip = Flip.from(state, {
-    onComplete: () => tl.resume()
-  })
-  
-  return flip
-}
+        const flip = Flip.from(state, {
+          ease: 'none',
+          absolute: false,
+          scale: false,
+          // onComplete: () => tl.resume(),
+        });
 
-function flipSquaresToColumn(tl) {
-    squareContainer = document.querySelector('.square-container')
-  
-  const state = Flip.getState('.square')
-  squareContainer.style.gridTemplateColumns = '1fr'
-  squareContainer.style.gridTemplateRows = 'repeat(9, 1fr)'
-  squareContainer.style.gridAutoFlow = 'rows'
-  
-  const flip = Flip.from(state, {
-    onComplete: () => tl.resume()
-  })
-  return flip
-}
+        return flip;
+      }
 
-function masterTL() {
-  t1 = gsap.timeline()
-  
-  t1.add(expandSquares())
-  t1.addPause(">", () => flipSquaresToRow(t1))
-  t1.addPause("+=0.00001", () => flipSquaresToColumn(t1))
-  // t1.call(flipSquaresToRow, null, ">")
-  // t1.call(flipSquaresToColumn, null, ">")
-}
+      function flipDeactivateCard(tl) {
+        //get state
+        let state = Flip.getState(cards, stateConfig);
+        //modify state
+        cards.forEach(function (card, index) {
+          card.classList.remove(ACTIVE_CLASS);
+        });
 
-masterTL()
+        const flip = Flip.from(state, {
+          ease: 'none',
+          absolute: false,
+          scale: false,
+          // onComplete: () => tl.resume(),
+        });
+        return flip;
+      }
+
+      function masterTL() {
+        flipCtx && flipCtx.revert();
+
+        flipCtx = gsap.context(() => {
+          // getStates();
+          const t1 = gsap.timeline({
+            scrollTrigger: {
+              trigger: spacer,
+              start: 'top 100%',
+              end: 'top 60%',
+              scrub: true,
+              markers: true,
+            },
+            onComplete: () => {
+              timeline2();
+            },
+          });
+          t1.add(flipActivateCard(t1));
+
+          const timeline2 = function () {
+            const t2 = gsap.timeline({
+              scrollTrigger: {
+                trigger: spacer,
+                start: 'top 40%',
+                end: 'top 0%',
+                scrub: true,
+                markers: true,
+              },
+            });
+            t2.add(flipDeactivateCard(t2));
+          };
+
+          // t1.add(expandSquares());
+          // t1.addPause('+=.5', () => flipDeactivateCard(t1));
+          // t1.call(flipSquaresToRow, null, ">")
+          // t1.call(flipSquaresToColumn, null, ">")
+        });
+      }
+
+      masterTL();
 */

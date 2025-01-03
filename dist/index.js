@@ -21,47 +21,38 @@
         const spacer = spacers[index];
         const cards = [...row.querySelectorAll(CARD)];
         console.log(row, spacer);
+        let startState;
+        let endState;
+        const flipConfig = {
+          ease: "none",
+          absolute: false,
+          scale: false
+        };
+        const stateConfig = {
+          nested: true,
+          props: "opacity"
+        };
         if (!row) return;
-        const scrollAnimation = function() {
+        const scrollIn = function() {
           flipCtx && flipCtx.revert();
           flipCtx = gsap.context(() => {
-            let startState = Flip.getState([row, cards], { nested: true, props: "opacity" });
+            let startState2 = Flip.getState([row, cards], stateConfig);
             cards.forEach(function(card, index2) {
               card.classList.add(ACTIVE_CLASS);
             });
-            let endState = Flip.getState([row, cards], { nested: true, props: "opacity" });
-            const flipConfig = {
-              ease: "none",
-              absolute: false,
-              scale: false
-            };
-            const tl = Flip.fromTo(startState, endState, {
-              ease: "none",
-              absolute: false,
-              scale: false,
-              scrollTrigger: {
-                trigger: spacer,
-                start: "top 100%",
-                end: "top 50%",
-                scrub: true,
-                markers: true
-              }
-            });
-            const tl2 = Flip.to(startState, {
-              ease: "none",
-              absolute: false,
-              scale: false,
-              scrollTrigger: {
-                trigger: spacer,
-                start: "bottom 0%",
-                end: "bottom 50%",
-                scrub: true,
-                markers: true
-              }
+            let endState2 = Flip.getState([row, cards], stateConfig);
+            const flip = Flip.fromTo(startState2, endState2, flipConfig);
+            ScrollTrigger.create({
+              trigger: spacer,
+              start: "top 100%",
+              end: "top 50%",
+              scrub: true,
+              markers: true,
+              animation: flip
             });
           });
         };
-        scrollAnimation();
+        scrollIn();
       });
     };
     let mm = gsap.matchMedia();
