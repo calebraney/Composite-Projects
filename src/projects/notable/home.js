@@ -1,278 +1,234 @@
-// Notable home animations
-// v1.3
+// Notable AI Platform Scroll
+// v1.5
 document.addEventListener('DOMContentLoaded', function () {
-  // register gsap plugins if available
-  if (gsap.ScrollTrigger !== undefined) {
-    gsap.registerPlugin(ScrollTrigger);
+  const lightLogo = document.querySelector('.logo-primary-img.is-light-gradient');
+  const darkLogo = document.querySelector('.logo-primary-img.is-dark-gradient');
+  const navbar = document.querySelector('nav');
+  const navBg = document.querySelector('.nav_bg');
+  const linkText = document.querySelectorAll('.nav_link-text');
+  const linkLines = document.querySelectorAll('.nav_link-underline');
+  const navUnderline = document.querySelector('.nav_underline');
+
+  console.log('hi');
+  const tl = gsap.timeline({
+    paused: true,
+    delay: 0.4,
+
+    defaults: {
+      ease: 'power1.out',
+      duration: 0.3,
+    },
+  });
+  tl.to(
+    {},
+    {
+      duration: 0.6,
+    }
+  );
+  tl.fromTo(
+    linkText,
+    {
+      color: 'white',
+    },
+    {
+      color: 'inherit',
+    }
+  );
+  tl.fromTo(
+    [linkLines, navUnderline, navBg],
+    {
+      opacity: 0,
+    },
+    {
+      opacity: 1,
+    },
+    '<'
+  );
+  tl.progress(0);
+  function darkNav() {
+    lightLogo.style.display = 'none';
+    darkLogo.style.display = 'block';
   }
+  function lightNav() {
+    lightLogo.style.display = 'block';
+    darkLogo.style.display = 'none';
+  }
+  function scrollDirectionListener() {
+    //check the current scroll distance from the top
+    let currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+    //compare current scroll distance to last scroll distance
+    console.log(currentScroll);
+    if (currentScroll === 0) {
+      //if use is at the top
+      darkNav();
+      tl.reverse();
+    } else {
+      //user is not at the top
+      lightNav();
+      tl.play();
+    }
+  }
+  scrollDirectionListener();
+  window.addEventListener('scroll', scrollDirectionListener);
+  /*
+  const platformScroll = function () {
+    //selectors
+    const WRAP = '[data-ix-platform="wrap"]';
+    const ROW = '[data-ix-platform="row"]';
+    const CARD = '[data-ix-platform="card"]';
+    const CARD_TEXT = '[data-ix-platform="card"] .ai-platform-card_text';
+    const SPACER = '[data-ix-platform="spacer"]';
 
-  const homeSlider = function () {
-    //Swiper selectors
-    const COMPONENT = '.notable_slider_component';
-    const SLIDER = '.swiper';
-    //Button selectors
-    const NEXT_BUTTON = '.swiper-next';
-    const PREVIOUS_BUTTON = '.swiper-prev';
-    //classes
     const ACTIVE_CLASS = 'is-active';
-    const DISABLED_CLASS = 'is-disabled';
-    const components = [...document.querySelectorAll(COMPONENT)];
-    components.forEach(function (component) {
-      if (!component) return;
-      const slider = component.querySelector(SLIDER);
-      // const nextButtonEl = component.querySelector(NEXT_BUTTON);
-      // const previousButtonEl = component.querySelector(PREVIOUS_BUTTON);
-      if (!slider || !component) return;
 
-      const swiper = new Swiper(slider, {
-        slidesPerView: 1,
-        spaceBetween: 56,
-        speed: 1000,
-        loop: true,
-        autoplay: {
-          delay: 3000,
-        },
-        parallax: true,
-        allowTouchMove: false,
-        mousewheel: false,
-        keyboard: false,
-        slideActiveClass: ACTIVE_CLASS,
-        slideDuplicateActiveClass: ACTIVE_CLASS,
-        effect: 'creative',
-        creativeEffect: {
-          next: {
-            // Array with translate X, Y and Z values
-            translate: ['60%', 0, 0],
-            opacity: 0,
-          },
-          prev: {
-            // Array with translate X, Y and Z values
-            translate: ['-60%', 0, 0],
-            opacity: 0,
-          },
-        },
-        // fadeEffect: {
-        //   crossFade: true,
-        // },
+    //elements
+    const rows = [...document.querySelectorAll(ROW)];
+    const spacers = [...document.querySelectorAll(SPACER)];
+    if (rows.length === 0) return;
+    //for each row
+    rows.forEach(function (row, index) {
+      let flipCtx;
+      const spacer = spacers[index];
+      const cards = [...row.querySelectorAll(CARD)];
+      const cardText = [...row.querySelectorAll(CARD_TEXT)];
 
-        // on: {
-        //   slideChange: function () {
-        //     // console.log('title swiper:', this.activeIndex);
-        //   },
-        // },
-      });
+      //guard clause
+      if (!row) return;
+
+      const scrollAnimation = function () {
+        flipCtx && flipCtx.revert();
+
+        flipCtx = gsap.context(() => {
+          const flipConfig = {
+            ease: 'none',
+            absolute: false,
+            scale: false,
+          };
+          const stateConfig = {
+            nested: true,
+            props: 'opacity,color',
+          };
+
+          //get starting state
+          let startState = Flip.getState([row, cards], stateConfig);
+          //modify state
+          cards.forEach(function (card, index) {
+            card.classList.add(ACTIVE_CLASS);
+          });
+          //get ending state
+          let endState = Flip.getState([row, cards], stateConfig);
+
+          //create the flip from and to each state
+          const flip = Flip.fromTo(startState, endState, flipConfig);
+          //create a timeline and add the flip to it
+          const tl = gsap.timeline({
+            paused: true,
+          });
+          tl.add(flip);
+          //optionally add other tweens into the timeline
+          tl.fromTo(cardText, { opacity: 0.25 }, { opacity: 1 }, '<');
+
+          //update the timeline based on a scrolltrigger
+          ScrollTrigger.create({
+            trigger: spacer,
+            start: 'clamp(top 100%)',
+            end: 'top 60%',
+            scrub: true,
+            markers: false,
+            onUpdate: (scroll) => {
+              tl.progress(scroll.progress);
+            },
+          });
+          ScrollTrigger.create({
+            trigger: spacer,
+            start: 'top 40%',
+            end: 'top 0%',
+            scrub: true,
+            markers: false,
+            onUpdate: (scroll) => {
+              tl.progress(1 - scroll.progress);
+            },
+          });
+        });
+      };
+      scrollAnimation();
     });
   };
-  homeSlider();
 
-  const homeOrbPulse = function () {
-    const ITEM = '[data-ix-platform-orb="item"]';
-    const orbs = [...document.querySelectorAll(ITEM)];
-    if (orbs.length === 0) return;
-    let tl = gsap.timeline({
-      repeat: -1,
-      yoyo: true,
-    });
-    tl.to(orbs, {
-      scale: 0.8,
-      ease: 'power2.InOut',
-      duration: 1.2,
-      stagger: { each: 0.2, repeat: -1, yoyo: true },
-    });
-  };
-  homeOrbPulse();
-
-  //////////////////////////////
   //Control Functions on page load
-
   let mm = gsap.matchMedia();
-
-  mm.add('(min-width: 992px)', () => {
+  mm.add('(min-width: 768px)', () => {
     // the code will only run if the media query matches
-    homeScroll();
-    return () => {
-      //this code will run when the media query stops matching
+    platformScroll();
+
+    //force page to reload on resize
+    let windowWidth = window.innerWidth;
+    window.addEventListener('resize', function () {
+      if (window.innerWidth !== windowWidth) {
+        location.reload();
+        console.log('reload');
+      }
+    });
+
+    //force page to top on reaload
+    window.onbeforeunload = function () {
+      window.scrollTo(0, 0);
     };
   });
+  */
 });
 
-//lottie resize
-var Webflow = Webflow || [];
-Webflow.push(function () {
-  window.addEventListener('resize', function () {
-    window.Webflow.require('lottie').lottie.resize();
+$(document).ready(function () {
+  $('.slider-main_component.is-testimonial').each(function () {
+    let loopMode = $(this).data('loop-mode') === true;
+    let sliderDuration = $(this).data('slider-duration') || 300;
+
+    new Swiper($(this).find('.swiper.is-testimonial')[0], {
+      speed: sliderDuration,
+      loop: true,
+      autoHeight: false,
+      centeredSlides: loopMode,
+      followFinger: true,
+      freeMode: false,
+      slideToClickedSlide: false,
+      slidesPerView: 'auto',
+      spaceBetween: '3%',
+      rewind: false,
+      mousewheel: {
+        forceToAxis: true,
+      },
+      keyboard: {
+        enabled: true,
+        onlyInViewport: true,
+      },
+      breakpoints: {
+        480: {
+          slidesPerView: '1',
+          spaceBetween: '2%',
+        },
+        768: {
+          slidesPerView: '1',
+          spaceBetween: '2%',
+        },
+        992: {
+          slidesPerView: '1',
+          spaceBetween: '2%',
+        },
+      },
+      navigation: {
+        nextEl: $(this).find('.swiper-next')[0],
+        prevEl: $(this).find('.swiper-prev')[0],
+        disabledClass: 'is-disabled',
+      },
+      pagination: {
+        el: $(this).find('.swiper-bullet-wrapper')[0],
+        bulletActiveClass: 'is-active',
+        bulletClass: 'swiper-bullet',
+        bulletElement: 'button',
+        clickable: true,
+      },
+      slideActiveClass: 'is-active',
+      slideDuplicateActiveClass: 'is-active',
+    });
   });
 });
-
-//////////////////////////////
-//OLD HOME SCROLL ANIMATION
-// const homeScroll = function () {
-//   const SECTION_CLASS = '.home_sticky-section';
-//   const CARD_WRAP_CLASS = '.home_sticky-card-wrapper';
-//   const CARD_CLASS = '.home_sticky-card';
-//   const BG_CLASS = '.home_sticky-card-bg';
-//   const UI_CLASS = '.sticky_home-img-ui';
-//   const IMG_CLASS = '.home_sticky-img';
-//   const card1 = document.querySelector(`${CARD_CLASS}.is-1`);
-//   const card2 = document.querySelector(`${CARD_CLASS}.is-2`);
-//   const card3 = document.querySelector(`${CARD_CLASS}.is-3`);
-//   const bg1 = document.querySelector(`${BG_CLASS}.is-1`);
-//   const bg2 = document.querySelector(`${BG_CLASS}.is-2`);
-//   const bg3 = document.querySelector(`${BG_CLASS}.is-3`);
-//   const cardWrap = document.querySelector(CARD_WRAP_CLASS);
-//   const section = document.querySelector(SECTION_CLASS);
-//   const img2 = document.querySelector(`${IMG_CLASS}.is-2`);
-//   const img3 = document.querySelector(`${IMG_CLASS}.is-3`);
-
-//   if (!card1 || !section || !cardWrap) return;
-//   const ui1 = card1.querySelector(UI_CLASS);
-//   const ui2 = card2.querySelector(UI_CLASS);
-//   const ui3 = card3.querySelector(UI_CLASS);
-
-//   let tl = gsap.timeline({
-//     scrollTrigger: {
-//       trigger: section,
-//       start: 'top 0%',
-//       end: 'bottom bottom',
-//       ease: 'power1.out',
-//       markers: false,
-//       scrub: 0.5,
-//     },
-//     defaults: {
-//       duration: 1,
-//       ease: 'none',
-//     },
-//   });
-//   tl.set([ui2, ui3, img2, img3], {
-//     opacity: 0,
-//   });
-//   tl.fromTo(
-//     card2,
-//     {
-//       scale: 0.9,
-//       y: '0.25rem',
-//     },
-//     {
-//       scale: 1,
-//       y: '-5.25rem',
-//     }
-//   );
-//   tl.fromTo(
-//     card3,
-//     {
-//       y: '5.25rem',
-//       scale: 0.8,
-//     },
-//     {
-//       y: '0rem',
-//       scale: 0.9,
-//     },
-//     '<'
-//   );
-//   tl.fromTo(
-//     card1,
-//     {
-//       y: '0rem',
-//     },
-//     {
-//       y: '-8.5rem',
-//     },
-//     '<'
-//   );
-//   tl.fromTo(
-//     bg2,
-//     {
-//       opacity: 0,
-//     },
-//     {
-//       opacity: 1,
-//       duration: 0.5,
-//     },
-//     '<'
-//   );
-//   tl.to(
-//     bg1,
-//     {
-//       opacity: 0,
-//       duration: 0.5,
-//     },
-//     '<.25'
-//   );
-//   tl.fromTo(
-//     ui2,
-//     {
-//       opacity: 0,
-//       x: '-10%',
-//       scale: 0.8,
-//     },
-//     {
-//       opacity: 1,
-//       x: '0%',
-//       scale: 1,
-//       duration: 0.5,
-//     },
-//     '<'
-//   );
-//   // Added IMG2 transition in sync with UI2
-//   tl.fromTo(
-//     img2,
-//     {
-//       opacity: 0,
-//     },
-//     {
-//       opacity: 1,
-//       duration: 0.5,
-//     },
-//     '<' // Ensures IMG2 animates in sync with UI2
-//   );
-//   tl.to(card3, {
-//     y: '0rem',
-//     scale: 1,
-//   });
-//   tl.fromTo(
-//     bg3,
-//     {
-//       opacity: 0,
-//     },
-//     {
-//       opacity: 1,
-//       duration: 0.5,
-//     },
-//     '<'
-//   );
-//   tl.to(
-//     bg2,
-//     {
-//       opacity: 0,
-//       duration: 0.5,
-//     },
-//     '<.25'
-//   );
-//   tl.fromTo(
-//     ui3,
-//     {
-//       opacity: 0,
-//       x: '-10%',
-//       scale: 0.8,
-//     },
-//     {
-//       opacity: 1,
-//       x: '0%',
-//       scale: 1,
-//       duration: 0.5,
-//     },
-//     '<'
-//   );
-//   // Added IMG3 transition in sync with UI3
-//   tl.fromTo(
-//     img3,
-//     {
-//       opacity: 0,
-//     },
-//     {
-//       opacity: 1,
-//       duration: 0.5,
-//     },
-//     '<' // Ensures IMG3 animates in sync with UI3
-//   );
-// };
