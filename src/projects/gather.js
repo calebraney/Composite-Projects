@@ -1,7 +1,10 @@
 // Gather AI Interactions
 // v1.0
 document.addEventListener('DOMContentLoaded', function () {
-  const quoteTabsAutoplay = function () {
+  const tabsAutoplay = function () {
+    /*
+    set the timer line to only have full opacity when inside the active class using CSS
+    */
     //selectors
     const TAB_MENU = '.quote-tabs_tabs-menu';
     const TAB = '.quote-tabs_tab-link';
@@ -10,28 +13,28 @@ document.addEventListener('DOMContentLoaded', function () {
     //animation options
     const TIMER_DURATION = 5;
 
-    const sliders = [...document.querySelectorAll(TAB_MENU)];
-    sliders.forEach((slider) => {
-      const slides = [...slider.querySelectorAll(TAB)];
-      const timerLines = [...slider.querySelectorAll(TIMER_LINE)];
-      //get slider duration from attribute or set it to the default
+    const components = [...document.querySelectorAll(TAB_MENU)];
+    components.forEach((component) => {
+      const tabs = [...component.querySelectorAll(TAB)];
+      const timerLines = [...component.querySelectorAll(TIMER_LINE)];
+      //get component duration from attribute or set it to the default
       const timerDuration = TIMER_DURATION;
-      if (slides.length === 0) return;
+      if (tabs.length === 0) return;
 
       //set timer and gsap timeline variable
       let timer;
-      let userClick = true; //track if the user clicked the slider
-      let tl = gsap.timeline({});
-      clearInterval(timer);
+      let userClick = true; //track if the user clicked the tabr
+      let tl = gsap.timeline({}); //create a gsap timeline
+      clearInterval(timer); // clear the interval of the timer
 
       //timer
       const startTimer = function (tl) {
+        //if timeline is currently running kill it
         if (tl) {
           tl.kill();
+          tl = gsap.timeline({});
         }
-        tl = gsap.timeline({});
-        // let currentTimerLine = document.querySelector(`.${ACTIVE_CLASS} ${TIMER_LINE}`);
-        // console.log(currentTimerLine);
+        // timer is one less than duration to account for first interval
         let time = timerDuration - 1;
         // start gsap animation
         tl.fromTo(
@@ -49,23 +52,23 @@ document.addEventListener('DOMContentLoaded', function () {
         timer = setInterval(function () {
           //decrease the time by one second
           time--;
-          //if timer is complete change slides
+          //if timer is complete change tabs
           if (time === 0) {
             changeTab();
           }
         }, 1000);
       };
 
-      const changeTab = function (nextIndex = undefined, manualClick = false, resetTimer = true) {
-        //if slide wasn't manually clicked
+      const changeTab = function (nextIndex = undefined, manualClick = false) {
+        //if tab wasn't manually clicked
         if (manualClick === false) {
           //set user click to false
           userClick = false;
           if (nextIndex === undefined) {
             nextIndex = findNextIndex();
           }
-          const nextSlide = slides[nextIndex];
-          nextSlide.click();
+          const nextTab = tabs[nextIndex];
+          nextTab.click();
         }
         //reset user click
         userClick = true;
@@ -76,16 +79,16 @@ document.addEventListener('DOMContentLoaded', function () {
       };
       changeTab(0);
 
-      //utility function to find the next slide in the loop
+      //utility function to find the next tab in the loop
       const findNextIndex = function () {
         let currentIndex;
-        slides.forEach((slide, index) => {
-          if (slide.classList.contains(ACTIVE_CLASS)) {
+        tabs.forEach((tab, index) => {
+          if (tab.classList.contains(ACTIVE_CLASS)) {
             currentIndex = index;
           }
         });
         //if current item is the last item set active index to the first item
-        if (currentIndex === slides.length - 1) {
+        if (currentIndex === tabs.length - 1) {
           return 0;
         } else {
           //otherwize set active index to the next item
@@ -94,29 +97,68 @@ document.addEventListener('DOMContentLoaded', function () {
       };
 
       //event listener for if the user manually clicks a tab
-      slides.forEach((slide, index) => {
-        slide.addEventListener('click', function () {
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', function () {
           if (userClick === true) {
             changeTab(index, true);
           }
         });
       });
-
-      //restart timer on resize
-      let windowWidth = window.innerWidth;
-      window.addEventListener('resize', function () {
-        if (window.innerWidth !== windowWidth) {
-          windowWidth = window.innerWidth;
-          slides.forEach((slide, index) => {
-            if (slide.classList.contains(ACTIVE_CLASS)) {
-              changeTab(index);
-            }
-          });
-        }
-      });
     });
   };
 
+  function dynamicSpans() {
+    const HEADING = '.heading-dynamic';
+    const SPAN = '.heading-dynamic-span';
+    const SPAN_INNER = 'heading-dynamic-span-inner';
+    const headings = [...document.querySelectorAll(HEADING)];
+    headings.forEach((item) => {
+      //get spans
+      spans = [...item.querySelectorAll(SPAN)];
+      //setup timeline
+      let tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: item,
+          start: 'top 90%',
+          end: 'bottom 70%',
+          toggleActions: 'play none none none',
+        },
+      });
+
+      spans.forEach((span) => {
+        // create a new div element
+        const lineMask = document.createElement('div');
+        //give it a class
+        lineMask.classList.add(SPAN_INNER);
+        // add the new div to a parent
+        span.appendChild(lineMask);
+        tl.fromTo(
+          lineMask,
+          {
+            opacity: 0,
+          },
+          {
+            opacity: 1,
+            ease: 'power1.out',
+            duration: 0.1,
+          },
+          '<.4'
+        );
+        tl.fromTo(
+          lineMask,
+          {
+            width: '0%',
+          },
+          {
+            width: '100%',
+            ease: 'power1.out',
+            duration: 1,
+          },
+          '<'
+        );
+      });
+    });
+  }
   function dynamicSpans() {
     const HEADING = '.heading-dynamic';
     const SPAN = '.heading-dynamic-span';
@@ -306,21 +348,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     const sliders = createSlider(components, options, modules);
   };
-  const featureTabsSlider = function () {
-    const COMPONENT = '.industry-tabs_slider';
-    const components = [...document.querySelectorAll(COMPONENT)];
-    const options = {
-      slidesPerView: 'auto',
-      loop: false,
-    };
-    //apply a module with defaults settings (canc override them using the options object above)
-    const modules = {
-      navigation: true,
-      pagination: false,
-      autoplay: false,
-    };
-    const sliders = createSlider(components, options, modules);
-  };
+
   const aboutLeadersSlider = function () {
     const COMPONENT = '.about-leaders_component';
     const components = [...document.querySelectorAll(COMPONENT)];
@@ -351,17 +379,24 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     const sliders = createSlider(components, options, modules);
   };
+  const featureTabsSlider = function () {
+    const COMPONENT = '.industry-tabs_slider';
+    const components = [...document.querySelectorAll(COMPONENT)];
+    const options = {
+      slidesPerView: 'auto',
+      loop: false,
+    };
+    //apply a module with defaults settings (canc override them using the options object above)
+    const modules = {
+      navigation: true,
+      pagination: false,
+      autoplay: false,
+    };
+    const sliders = createSlider(components, options, modules);
+  };
 
   //Control Functions on page load
-  // quoteTabsAutoplay2();
-  quoteTabsAutoplay();
-
-  solutionsSlider();
-  featuresSlider();
-  // featureTabsSlider();
-  aboutLeadersSlider();
-  careersSlider();
-
+  //desktop only functions
   let mm = gsap.matchMedia();
   mm.add('(min-width: 992px)', () => {
     // the code will only run if the media query matches
@@ -370,4 +405,10 @@ document.addEventListener('DOMContentLoaded', function () {
       //this code will run when the media query stops matching
     };
   });
+  tabsAutoplay();
+  solutionsSlider();
+  featuresSlider();
+  aboutLeadersSlider();
+  careersSlider();
+  featureTabsSlider();
 });
