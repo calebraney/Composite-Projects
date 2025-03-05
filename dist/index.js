@@ -7,26 +7,30 @@
 
   // src/index.js
   document.addEventListener("DOMContentLoaded", function() {
-    const quoteTabsAutoplay = function() {
-      const SLIDER_WRAP = ".quote-tabs_tabs-menu";
-      const SLIDE = ".quote-tabs_tab-link";
+    const tabsAutoplay = function() {
+      const TAB_MENU = ".quote-tabs_tabs-menu";
+      const TAB = ".quote-tabs_tab-link";
       const TIMER_LINE = ".quote-tabs_tab-line-fill";
       const ACTIVE_CLASS = "w--current";
       const TIMER_DURATION = 5;
-      const sliders = [...document.querySelectorAll(SLIDER_WRAP)];
-      sliders.forEach((slider) => {
-        const slides = [...slider.querySelectorAll(SLIDE)];
-        const timerLines = [...slider.querySelectorAll(TIMER_LINE)];
+      const components = [...document.querySelectorAll(TAB_MENU)];
+      components.forEach((component) => {
+        const tabs = [...component.querySelectorAll(TAB)];
+        const timerLines = [...component.querySelectorAll(TIMER_LINE)];
         const timerDuration = TIMER_DURATION;
-        if (slides.length === 0) return;
+        if (tabs.length === 0) return;
         let timer;
+        let userClick = true;
         let tl = gsap.timeline({});
         clearInterval(timer);
         const startTimer = function(tl2) {
-          let currentTimerLine = document.querySelector(`.${ACTIVE_CLASS} ${TIMER_LINE}`);
+          if (tl2) {
+            tl2.kill();
+            tl2 = gsap.timeline({});
+          }
           let time = timerDuration - 1;
           tl2.fromTo(
-            currentTimerLine,
+            timerLines,
             {
               width: "0%"
             },
@@ -39,70 +43,92 @@
           timer = setInterval(function() {
             time--;
             if (time === 0) {
-              nextSlide();
+              changeTab();
             }
           }, 1e3);
         };
-        const activateSlides = function(activeIndex) {
-          slides.forEach((slide, index) => {
-            const slideLine = timerLines[index];
-            if (index === activeIndex) {
-              slideLine.style.opacity = "1";
-            } else {
-              slideLine.style.opacity = "0";
+        const changeTab = function(nextIndex = void 0, manualClick = false) {
+          if (manualClick === false) {
+            userClick = false;
+            if (nextIndex === void 0) {
+              nextIndex = findNextIndex();
             }
-          });
-        };
-        const nextSlide = function(nextIndex = void 0, resetTimer = true) {
-          if (nextIndex === void 0) {
-            nextIndex = findNextIndex();
+            const nextTab = tabs[nextIndex];
+            nextTab.click();
           }
-          const nextSlide2 = slides[nextIndex];
-          activateSlides(nextIndex);
+          userClick = true;
           clearInterval(timer);
-          if (resetTimer) {
-            startTimer(tl);
-          } else {
-            tl.kill();
-            gsap.to(timerLine, {
-              opacity: 0,
-              duration: 0.4,
-              ease: "power1.out"
-            });
-          }
+          startTimer(tl);
         };
-        nextSlide(0);
+        changeTab(0);
         const findNextIndex = function() {
           let currentIndex;
-          slides.forEach((slide, index) => {
-            if (slide.classList.contains(ACTIVE_CLASS)) {
+          tabs.forEach((tab, index) => {
+            if (tab.classList.contains(ACTIVE_CLASS)) {
               currentIndex = index;
             }
           });
-          if (currentIndex === slides.length - 1) {
+          if (currentIndex === tabs.length - 1) {
             return 0;
           } else {
             return currentIndex + 1;
           }
         };
-        slides.forEach((slide, index) => {
-          slide.addEventListener("click", function() {
-            console.log("click");
+        tabs.forEach((tab, index) => {
+          tab.addEventListener("click", function() {
+            if (userClick === true) {
+              changeTab(index, true);
+            }
           });
-        });
-        let windowWidth = window.innerWidth;
-        window.addEventListener("resize", function() {
-          if (window.innerWidth !== windowWidth) {
-            windowWidth = window.innerWidth;
-            slides.forEach((slide, index) => {
-              if (slide.classList.contains(ACTIVE_CLASS)) {
-                nextSlide(index);
-              }
-            });
-          }
         });
       });
     };
+    function dynamicSpans() {
+      const HEADING = ".heading-dynamic";
+      const SPAN = ".heading-dynamic-span";
+      const SPAN_INNER = "heading-dynamic-span-inner";
+      const headings = [...document.querySelectorAll(HEADING)];
+      headings.forEach((item) => {
+        spans = [...item.querySelectorAll(SPAN)];
+        let tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: "top 90%",
+            end: "bottom 70%",
+            toggleActions: "play none none none"
+          }
+        });
+        spans.forEach((span) => {
+          const lineMask = document.createElement("div");
+          lineMask.classList.add(SPAN_INNER);
+          span.appendChild(lineMask);
+          tl.fromTo(
+            lineMask,
+            {
+              opacity: 0
+            },
+            {
+              opacity: 1,
+              ease: "power1.out",
+              duration: 0.1
+            },
+            "<.4"
+          );
+          tl.fromTo(
+            lineMask,
+            {
+              width: "0%"
+            },
+            {
+              width: "100%",
+              ease: "power1.out",
+              duration: 1
+            },
+            "<"
+          );
+        });
+      });
+    }
     function dynamicSpans() {
       const HEADING = ".heading-dynamic";
       const SPAN = ".heading-dynamic-span";
@@ -259,20 +285,6 @@
       };
       const sliders = createSlider(components, options, modules);
     };
-    const featureTabsSlider = function() {
-      const COMPONENT = ".industry-tabs_slider";
-      const components = [...document.querySelectorAll(COMPONENT)];
-      const options = {
-        slidesPerView: "auto",
-        loop: false
-      };
-      const modules = {
-        navigation: true,
-        pagination: false,
-        autoplay: false
-      };
-      const sliders = createSlider(components, options, modules);
-    };
     const aboutLeadersSlider = function() {
       const COMPONENT = ".about-leaders_component";
       const components = [...document.querySelectorAll(COMPONENT)];
@@ -301,16 +313,31 @@
       };
       const sliders = createSlider(components, options, modules);
     };
-    quoteTabsAutoplay();
-    solutionsSlider();
-    featuresSlider();
-    aboutLeadersSlider();
-    careersSlider();
+    const featureTabsSlider = function() {
+      const COMPONENT = ".industry-tabs_slider";
+      const components = [...document.querySelectorAll(COMPONENT)];
+      const options = {
+        slidesPerView: "auto",
+        loop: false
+      };
+      const modules = {
+        navigation: true,
+        pagination: false,
+        autoplay: false
+      };
+      const sliders = createSlider(components, options, modules);
+    };
     let mm = gsap.matchMedia();
     mm.add("(min-width: 992px)", () => {
       dynamicSpans();
       return () => {
       };
     });
+    tabsAutoplay();
+    solutionsSlider();
+    featuresSlider();
+    aboutLeadersSlider();
+    careersSlider();
+    featureTabsSlider();
   });
 })();
