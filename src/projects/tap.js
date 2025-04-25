@@ -1,4 +1,4 @@
-// v1.0 TAP Global interactions
+// v1.1 TAP Global interactions
 document.addEventListener('DOMContentLoaded', function () {
   const attr = function (defaultVal, attrVal) {
     //get the type of the default
@@ -255,6 +255,29 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     const sliders = createSlider(components, options, modules);
   };
+
+  const bundlesSlider = function () {
+    const COMPONENT = '.bundles_component';
+    const components = [...document.querySelectorAll(COMPONENT)];
+    const options = {
+      slidesPerView: 'auto',
+      spaceBetween: 16,
+      loop: false,
+      drag: true,
+      allowSlideNext: true,
+      //   autoHeight: true,
+      //   freeMode: false,
+    };
+    //apply a module with defaults settings (canc override them using the options object above)
+    const modules = {
+      navigation: false,
+      pagination: false,
+      autoplay: false,
+    };
+    const sliders = createSlider(components, options, modules);
+    sliders[0].slideNext();
+    console.log(sliders[0]);
+  };
   //////////////////////////////
   //Control Functions on page load
   const gsapInit = function () {
@@ -276,7 +299,8 @@ document.addEventListener('DOMContentLoaded', function () {
         homeTestimonialsSlider();
 
         //globaally run animations on specific breakpoints
-        if (isDesktop || isTablet) {
+        if (isMobile) {
+          //   bundlesSlider();
         }
       }
     );
