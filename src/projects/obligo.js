@@ -1,5 +1,5 @@
 // Obligo Interactions
-// v1.0
+// v1.1
 document.addEventListener('DOMContentLoaded', function () {
   // Select all elements with [data-lightbox="wrap"]
 
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const DYNAMIC_DURATION = 'data-ix-marquee-duration-dynamic'; // set to true to make the duration dynamic per amount of items
     const DURATION_PER_ITEM = 'data-ix-marquee-duration-per-item'; // the duration per the amount of items
     const HOVER_EFFECT = 'data-ix-marquee-hover'; //option for hover effect
-    const ACCELERATE_ON_HOVER = 'decelerate';
+    const ACCELERATE_ON_HOVER = 'accelerate';
     const DECELERATE_ON_HOVER = 'decelerate';
     const PAUSE_ON_HOVER = 'pause';
     //defaults
